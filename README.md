@@ -24,7 +24,7 @@
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 [![MIT License][license-shield]][license-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
+
 -->
 
 
@@ -181,7 +181,7 @@ Gil Emmanuel Bancud - [@iamuPnP](https://www.facebook.com/iamuPnP) - gembancud@g
 
 Project Link: [https://github.com/gembancud/Cheating-Detection](https://github.com/gembancud/Cheating-Detection)
 
-
+[![LinkedIn][linkedin-shield]][linkedin-url]
 
 <!-- ACKNOWLEDGEMENTS -->
 ## Acknowledgements
