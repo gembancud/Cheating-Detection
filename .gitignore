@@ -144,3 +144,5 @@ CheatDetection/models/
 CheatDetection/python/
 CheatDetection/x64/
 SuperCamera/sample.mp4
+linuxvenv/
+.vscode/
