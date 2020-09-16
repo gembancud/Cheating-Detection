@@ -157,7 +157,7 @@
 
     // Update image and text data based on incoming data messages
     socket.on('server2web', (msg) => {
-      image_elem.src = msg.image;
+      image_elem.src = msg.message;
     });
   });
 </script>
