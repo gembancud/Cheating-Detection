@@ -1,2 +1,2 @@
 #!/bin/sh
-gunicorn --worker-class eventlet -w 2 -b 0.0.0.0:5000 run:app
+gunicorn --worker-class eventlet -w 4 -b 0.0.0.0:8000 run:app
