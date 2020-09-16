@@ -25,21 +25,23 @@ def gen(camera):
 
 @socketio.on('connect', namespace='/web')
 def connect_web():
-   print('[INFO] Web client connected: {}'.format(request.sid))
+    print('[INFO] Web client connected: {}'.format(request.sid))
+    socketio.emit('enable_camera', {}, namespace='/nano')
 
 @socketio.on('disconnect', namespace='/web')
 def disconnect_web():
     print('[INFO] Web client disconnected: {}'.format(request.sid))
+    socketio.emit('disable_camera', {}, namespace='/nano')
 
-@socketio.on('connect', namespace='/cv')
-def connect_cv():
-   print('[INFO] CV client connected: {}'.format(request.sid))
-   socketio.emit('oten', 'oten2')
+@socketio.on('connect', namespace='/nano')
+def connect_nano():
+   print('[INFO] nano client connected: {}'.format(request.sid))
 
-@socketio.on('disconnect', namespace='/cv')
-def disconnect_cv():
-   print('[INFO] CV client disconnected: {}'.format(request.sid))
+@socketio.on('disconnect', namespace='/nano')
+def disconnect_nano():
+   print('[INFO] nano client disconnected: {}'.format(request.sid))
 
-@socketio.on('cv2server')
-def handle_cv_message(message):
+@socketio.on('nano2server')
+def handle_nano_message(message):
     socketio.emit('server2web', message, namespace='/web')
+
