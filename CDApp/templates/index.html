@@ -116,6 +116,8 @@
     </div>
 
     <div class="card-deck">
+      <button onclick="StartAll()">Start All</button>
+      <button onclick="StopAll()">Stop All</button>
 
       <div style="width: 70%">
         <img id="streamer-image" src="">
@@ -156,8 +158,13 @@
     });
 
     // Update image and text data based on incoming data messages
-    socket.on('server2web', (msg) => {
+    socket.on('change_web_image', (msg) => {
       image_elem.src = msg.message;
     });
   });
+  
+  function StartAll() {
+  }
+  function StopAll() {
+  }
 </script>
