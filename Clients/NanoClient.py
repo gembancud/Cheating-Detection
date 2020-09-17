@@ -9,6 +9,7 @@ streamer = None
 camera = 0
 enabled = False
 isRunning = False
+Cap = None
 
 @sio.event
 def disconnect():
@@ -19,13 +20,15 @@ def disconnect():
 def CVCamera():
     global isRunning
     isRunning = True
-    Cap = cv2.VideoCapture(camera)
+    global Cap
+    Cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
     if not Cap.isOpened():
         raise RuntimeError('Could not start camera.')
     while enabled:
+        time.sleep(0.01)
         _, img = Cap.read()
         streamer.send_data(Streamer.convert_image_to_jpeg(img))
-        print("sent image to server")
+        # print("sent image to server")
     Cap.release()
     isRunning = False
 CVThread = threading.Thread(target=CVCamera)
@@ -44,23 +47,28 @@ def nanoClient(_camera, _server_addr, _stream_fps, _server_port):
 
 @sio.on('enable_camera', namespace='/nano')
 def enable_camera(message):
-    print("[INFO] Enabled Camera on Nano")
     global enabled
     if enabled or isRunning:
         print(f'[INFO] Camera already enabled')
+        Cap.release()
         return
+    print("[INFO] Enabled Camera on Nano")
     enabled =True
+    global CVThread
+    CVThread = threading.Thread(target=CVCamera)
+    CVThread.setDaemon(True)
     CVThread.start()
 
 
 @sio.on('disable_camera', namespace='/nano')
 def disable_camera(self):
-    print("[INFO] Disable Camera on Nano")
     global enabled
     if not enabled:
         print(f'[INFO] Camera already disabled')
         return
+    print("[INFO] Disable Camera on Nano")
     enabled= False
+    global CVThread
     CVThread = threading.Thread(target=CVCamera)
     CVThread.setDaemon(True)
 

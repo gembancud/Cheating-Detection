@@ -24,10 +24,11 @@ def disconnect():
 def ProcessFrames():
     global imageChanged
     while enabled:
+        time.sleep(0.01)
         # if not imageQueue:
         if image is None or not imageChanged:
-            # print("image queue is empty!")
-            time.sleep(0.5)
+            print("Im at a bottleneck that shouldnt be happening!")
+            time.sleep(0.2)
             continue
         # frame = imageQueue.popleft()
         frame = image
