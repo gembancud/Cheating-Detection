@@ -7,8 +7,6 @@
 
 
 
-
-
 <!-- PROJECT SHIELDS -->
 <!--
 *** I'm using markdown "reference style" links for readability.
@@ -94,6 +92,8 @@ A list of commonly used resources that I find helpful are listed in the acknowle
 This section should list any major frameworks that you built your project using. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
 * [OpenPose](https://github.com/CMU-Perceptual-Computing-Lab/openpose)
 * [Flask](https://flask.palletsprojects.com/en/1.1.x/)
+* [Flask-SocketIO](https://flask-socketio.readthedocs.io/en/latest/)
+* [Python-SocketIO](https://python-socketio.readthedocs.io/en/latest/index.html)
 * [XGBoost](https://xgboost.readthedocs.io/en/latest/)
 
 
@@ -150,7 +150,7 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 
 See the [open issues](https://github.com/gembancud/Cheating-Detection/issues) for a list of proposed features (and known issues).
 
-Author's personal [documentation](https://github.com/othneildrew/Best-README-Template/blob/master/README.md) hosted on Google Sheets
+Author's personal [documentation](https://docs.google.com/spreadsheets/d/1rPMHePNQsHh3moOTQ3r7VIakKBZ2deZtDosMtV5RZo4/edit?usp=sharing) hosted on Google Sheets
 
 
 
