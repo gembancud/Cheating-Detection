@@ -8,21 +8,29 @@ import threading
 streamer = None
 camera = 0
 enabled = False
+isRunning = False
+
+@sio.event
+def disconnect():
+    print('[INFO] Disconnected from server.')
+    global enabled
+    enabled = False
 
 def CVCamera():
-    global camera,enabled
+    global isRunning
+    isRunning = True
     Cap = cv2.VideoCapture(camera)
     if not Cap.isOpened():
         raise RuntimeError('Could not start camera.')
     while enabled:
         _, img = Cap.read()
-        streamer.send_data(_convert_image_to_jpeg(img))
+        streamer.send_data(Streamer.convert_image_to_jpeg(img))
+        print("sent image to server")
     Cap.release()
+    isRunning = False
 CVThread = threading.Thread(target=CVCamera)
-CVThread.setDaemon(True)
 
 def nanoClient(_camera, _server_addr, _stream_fps, _server_port):
-    print('passed here')
     global streamer 
     streamer =  Streamer('nano', _server_addr, _server_port, _stream_fps).setup()
     sio.wait()
@@ -30,12 +38,15 @@ def nanoClient(_camera, _server_addr, _stream_fps, _server_port):
     global camera
     camera = _camera
 
+    global CVThread
+    CVThread = threading.Thread(target=CVCamera)
+    CVThread.setDaemon(True)
 
 @sio.on('enable_camera', namespace='/nano')
 def enable_camera(message):
     print("[INFO] Enabled Camera on Nano")
-    global enabled,CVThread
-    if enabled:
+    global enabled
+    if enabled or isRunning:
         print(f'[INFO] Camera already enabled')
         return
     enabled =True
@@ -50,6 +61,10 @@ def disable_camera(self):
         print(f'[INFO] Camera already disabled')
         return
     enabled= False
+    CVThread = threading.Thread(target=CVCamera)
+    CVThread.setDaemon(True)
+
+
 
     # try:
         # streamer = Streamer('nano', server_addr, server_port, stream_fps).setup()
@@ -68,15 +83,6 @@ def disable_camera(self):
     #     if streamer is not None:
     #         streamer.close()
     #     print("Program Ending")
-
-def _convert_image_to_jpeg(image):
-    # Encode frame as jpeg
-    frame = cv2.imencode('.jpg', image)[1].tobytes()
-    # Encode frame in base64 representation and remove
-    # utf-8 encoding
-    frame = base64.b64encode(frame).decode('utf-8')
-    return "data:image/jpeg;base64,{}".format(frame)
-
 
 # class NanoClient:
 #     streamer = None
