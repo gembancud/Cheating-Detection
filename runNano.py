@@ -11,7 +11,7 @@ if __name__ == "__main__":
         '--server-addr',  type=str, default='localhost',
         help='The IP address or hostname of the SocketIO server.')
     parser.add_argument(
-        '--stream-fps',  type=float, default=8.0,
+        '--stream-fps',  type=float, default=24.0,
         help='The rate to send frames to the server.')
     parser.add_argument(
         '--server-port',  type=int, default=8000,
