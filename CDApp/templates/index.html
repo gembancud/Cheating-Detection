@@ -134,7 +134,12 @@
     const image_elem = document.getElementById("streamer-image");
 
     var socket = io.connect('http://' + document.domain + ':' + location.port + '/web', {
-      reconnection: false
+      reconnection: false,
+      transports: ['websocket']
+    });
+
+    socket.on('reconnect_attempt', () => {
+      socket.io.opts.transports = ['polling', 'websocket'];
     });
 
     socket.on('connect', () => {
