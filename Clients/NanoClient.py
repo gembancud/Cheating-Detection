@@ -11,11 +11,13 @@ enabled = False
 isRunning = False
 Cap = None
 
+
 @sio.event
 def disconnect():
     print('[INFO] Disconnected from server.')
     global enabled
     enabled = False
+
 
 def CVCamera():
     global isRunning
@@ -31,11 +33,15 @@ def CVCamera():
         # print("sent image to server")
     Cap.release()
     isRunning = False
+
+
 CVThread = threading.Thread(target=CVCamera)
 
+
 def nanoClient(_camera, _server_addr, _stream_fps, _server_port):
-    global streamer 
-    streamer =  Streamer('nano', _server_addr, _server_port, _stream_fps).setup()
+    global streamer
+    streamer = Streamer('nano', _server_addr,
+                        _server_port, _stream_fps).setup()
     sio.wait()
 
     global camera
@@ -45,6 +51,7 @@ def nanoClient(_camera, _server_addr, _stream_fps, _server_port):
     CVThread = threading.Thread(target=CVCamera)
     CVThread.setDaemon(True)
 
+
 @sio.on('enable_camera', namespace='/nano')
 def enable_camera(message):
     global enabled
@@ -53,7 +60,7 @@ def enable_camera(message):
         Cap.release()
         return
     print("[INFO] Enabled Camera on Nano")
-    enabled =True
+    enabled = True
     global CVThread
     CVThread = threading.Thread(target=CVCamera)
     CVThread.setDaemon(True)
@@ -67,26 +74,24 @@ def disable_camera(self):
         print(f'[INFO] Camera already disabled')
         return
     print("[INFO] Disable Camera on Nano")
-    enabled= False
+    enabled = False
     global CVThread
     CVThread = threading.Thread(target=CVCamera)
     CVThread.setDaemon(True)
 
-
-
     # try:
-        # streamer = Streamer('nano', server_addr, server_port, stream_fps).setup()
-        # if not camera.isOpened():
-        #     raise RuntimeError('Could not start camera.')
-        # while True:
-        #     streamer.sio.wait()
-        #     _, img = camera.read()
-        #     streamer.send_data(_convert_image_to_jpeg(img))
-        #     # cv2.imshow("NanoClient", img)
-        #     # if cv2.waitKey(1) & 0xFF == ord("q"):
-        #     #     break
-        #     # if streamer.check_exit():
-        #     #     break
+    # streamer = Streamer('nano', server_addr, server_port, stream_fps).setup()
+    # if not camera.isOpened():
+    #     raise RuntimeError('Could not start camera.')
+    # while True:
+    #     streamer.sio.wait()
+    #     _, img = camera.read()
+    #     streamer.send_data(_convert_image_to_jpeg(img))
+    #     # cv2.imshow("NanoClient", img)
+    #     # if cv2.waitKey(1) & 0xFF == ord("q"):
+    #     #     break
+    #     # if streamer.check_exit():
+    #     #     break
     # finally:
     #     if streamer is not None:
     #         streamer.close()
@@ -108,7 +113,7 @@ def disable_camera(self):
 #         NanoClient.thread = None
 #         NanoClient.stop = False
 #         NanoClient.streamer.sio.wait()
-        
+
 #     def enable_camera(self):
 #         print("Enabled Camera on Nano")
 #         if NanoClient.enabled:
@@ -117,7 +122,7 @@ def disable_camera(self):
 #         NanoClient.enabled = True
 #         NanoClient.thread = threading.Thread(target=NanoClient.CVCamera)
 #         NanoClient.thread.start()
-    
+
 #     def disable_camera(self):
 #         if not self.enabled:
 #             return
@@ -144,4 +149,3 @@ def disable_camera(self):
 #         # utf-8 encoding
 #         frame = base64.b64encode(frame).decode('utf-8')
 #         return "data:image/jpeg;base64,{}".format(frame)
-

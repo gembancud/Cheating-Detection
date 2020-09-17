@@ -17,6 +17,7 @@ if __name__ == "__main__":
         help='The connection port of the server.')
     args = parser.parse_args()
 
-    CheatDetectionClient.cheatDetectionClient(args.server_addr, args.stream_fps, args.server_port)
+    CheatDetectionClient.cheatDetectionClient(
+        args.server_addr, args.stream_fps, args.server_port)
     # NanoClient(args.server_addr, args.server_port,
     #            args.stream_fps, args.camera)

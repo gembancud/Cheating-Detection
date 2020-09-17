@@ -1,4 +1,4 @@
-from CDApp import app,socketio
+from CDApp import app, socketio
 import eventlet
 import eventlet.wsgi
 # eventlet.monkey_patch()

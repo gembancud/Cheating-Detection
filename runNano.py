@@ -18,6 +18,7 @@ if __name__ == "__main__":
         help='The connection port of the server.')
     args = parser.parse_args()
 
-    NanoClient.nanoClient(args.camera, args.server_addr, args.stream_fps, args.server_port)
+    NanoClient.nanoClient(args.camera, args.server_addr,
+                          args.stream_fps, args.server_port)
     # NanoClient(args.server_addr, args.server_port,
     #            args.stream_fps, args.camera)

@@ -15,11 +15,13 @@ imageChanged = False
 # outputQueue = deque([])
 enabled = False
 
+
 @sio.event
 def disconnect():
     print('[INFO] Disconnected from server.')
     global enabled
     enabled = False
+
 
 def ProcessFrames():
     global imageChanged
@@ -35,7 +37,9 @@ def ProcessFrames():
         output = cheatDetection.GeneratePose(frame)
         output = cheatDetection.DetectCheat()
         streamer.send_data(Streamer.convert_image_to_jpeg(output))
-        imageChanged= True
+        imageChanged = True
+
+
 ProcessFramesThread = threading.Thread(target=ProcessFrames)
 
 # def OutputFrames():
@@ -51,16 +55,15 @@ ProcessFramesThread = threading.Thread(target=ProcessFrames)
 
 def cheatDetectionClient(_server_addr, _stream_fps, _server_port):
     global streamer
-    streamer =  Streamer('cd', _server_addr, _server_port, _stream_fps).setup()
+    streamer = Streamer('cd', _server_addr, _server_port, _stream_fps).setup()
     sio.wait()
 
     global ProcessFramesThread
-    ProcessFramesThread= threading.Thread(target=ProcessFrames)
+    ProcessFramesThread = threading.Thread(target=ProcessFrames)
     ProcessFramesThread.setDaemon(True)
     # global OutputFramesThread
     # OutputFramesThread= threading.Thread(target=OutputFrames)
     # OutputFramesThread.setDaemon(True)
-
 
 
 @sio.on('push_to_imageQueue', namespace='/cd')
@@ -71,6 +74,7 @@ def push_to_imageQueue(message):
     imageChanged = True
     # imageQueue = append(image)
 
+
 @sio.on('enable_detection', namespace='/cd')
 def enable_detection(message):
     print("[INFO] Enabled Cheating Detection")
@@ -78,7 +82,7 @@ def enable_detection(message):
     if enabled:
         print(f'[INFO] Cheating Detection already enabled')
         return
-    enabled =True
+    enabled = True
     ProcessFramesThread.start()
     # OutputFramesThread.start()
 
@@ -90,12 +94,10 @@ def disable_detection(self):
     if not enabled:
         print(f'[INFO] Cheating Detection already disabled')
         return
-    enabled= False
+    enabled = False
     global ProcessFramesThread
-    ProcessFramesThread= threading.Thread(target=ProcessFrames)
+    ProcessFramesThread = threading.Thread(target=ProcessFrames)
     ProcessFramesThread.setDaemon(True)
     # global OutputFramesThread
     # OutputFramesThread= threading.Thread(target=OutputFrames)
     # OutputFramesThread.setDaemon(True)
-
-

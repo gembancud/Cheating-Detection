@@ -8,7 +8,20 @@ import os
 from imutils.video import FPS
 import threading
 
+
 class SuperCamera(Camera):
+    """ [UNUSED] Monolithic approach of having a Class inherit all Functionality from threading,
+        to generator throttling to Image Processing to Pose Estimation, then finally to Cheat Detection    
+
+    Args:
+        Camera (Camera_OpenCV): Sets Grandparent to use camera as video source
+
+    Raises:
+        RuntimeError: Checks Camera Functionality
+
+    Yields:
+        Jpeg: Produces encoded from camera, and processed with Cheat Detection
+    """
     cheatDetection = CheatDetection()
     threadCount = threading.active_count()
 
