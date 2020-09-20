@@ -39,9 +39,9 @@ try:
         import pyopenpose as op
     else:
         # Change these variables to point to the correct folder (Release/x64 etc.)
-        sys.path.append('./python')
+        # sys.path.append('./python/openpose')
         # If you run `make install` (default path is `/usr/local/python` for Ubuntu), you can also access the OpenPose/python module from there. This will install OpenPose and the python library at your desired installation path. Ensure that this is in your python path in order to use it.
-        # sys.path.append('/usr/local/python')
+        sys.path.append('/usr/local/python')
         from openpose import pyopenpose as op
 except ImportError as e:
     print('Error: OpenPose library could not be found. Did you enable `BUILD_PYTHON` in CMake and have this Python script in the right folder?')
@@ -50,7 +50,11 @@ except ImportError as e:
 class CheatDetection:
     def __init__(self):
         params = dict()
-        params["model_folder"] =dir_path + "./models/"
+        if platform == "win32":
+            model_folder = dir_path + "./models/"
+        else:
+            model_folder =dir_path + "/models/"
+        params["model_folder"] = model_folder
         params["net_resolution"] = "-1x80"
         params["output_resolution"] = "-1x320"
 
@@ -62,13 +66,18 @@ class CheatDetection:
 
         # Starting XGBoost
         self.model = XGBClassifier()
-        self.model.load_model(dir_path+"./XGB_YMCA.model")
+        if platform == "win32":
+            xgboost_model_path = dir_path + "./XGB_YMCA.model"
+        else:
+            xgboost_model_path =dir_path + "/XGB_YMCA.model"
+        self.model.load_model(xgboost_model_path)
 
         # Process Encoder
         self.le = LabelEncoder()
         self.le.fit(["Y", "M", "C", "A"])
 
     def GeneratePose(self, img):
+        # datum = op.Datum()
         self.datum.cvInputData = img
         self.opWrapper.emplaceAndPop([self.datum])
         return self.datum.cvOutputData
@@ -81,11 +90,16 @@ class CheatDetection:
             newPoseCollection = ReshapePoseCollection(newPoseCollection)
             newPoseCollection = ConvertToDataFrame(newPoseCollection)
             
-            with concurrent.futures.ThreadPoolExecutor() as executor:
-                newPoseCollection = [ row for index,row in newPoseCollection.iterrows() ]
-                pred = executor.map(self.model.predict, newPoseCollection)
-                pred = map(self.le.inverse_transform, pred)
-                detectedPoses.extend(list(pred))
+            # with concurrent.futures.ThreadPoolExecutor() as executor:
+            #     newPoseCollection = [ row for index,row in newPoseCollection.iterrows() ]
+            #     pred = executor.map(self.model.predict, newPoseCollection)
+            #     pred = map(self.le.inverse_transform, pred)
+            #     detectedPoses.extend(list(pred))
+
+            for index,row in newPoseCollection.iterrows():
+                pred = self.model.predict(row)
+                pred = self.le.inverse_transform(pred)
+                detectedPoses.append(pred)
         
         self.datum.cvOutputData = cv2.putText(
             self.datum.cvOutputData,
@@ -97,7 +111,6 @@ class CheatDetection:
             2,
             cv2.LINE_AA,
         )
-
         return self.datum.cvOutputData
 
 
