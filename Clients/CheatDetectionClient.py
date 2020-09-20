@@ -5,99 +5,68 @@ import base64
 import time
 import threading
 from collections import deque
+import copy
+import gc
 
-streamer = None
-enabled = False
-cheatDetection = CheatDetection()
-image = None
-imageChanged = False
-# imageQueue = deque([])
-# outputQueue = deque([])
-enabled = False
+lock = threading.Lock()
 
-
-@sio.event
-def disconnect():
-    print('[INFO] Disconnected from server.')
-    global enabled
+class CDClient:
+    streamer = None
     enabled = False
 
+    imageQueue = deque([])
+    cheatDetection = CheatDetection()
+
+    def __init__(self,_server_addr, _stream_fps, _server_port):
+        CDClient.streamer = Streamer('cd', _server_addr, _server_port, _stream_fps).setup()
+        sio.wait()
+
+    @staticmethod
+    @sio.event
+    def disconnect():
+        print('[INFO] Disconnected from server.')
+        # CDClient.enabled = False
+
+    @staticmethod
+    @sio.on('enable_detection', namespace='/cd')
+    def enable_detection(message):
+        print("[INFO] Enabled Cheating Detection")
+        if CDClient.enabled:
+            print(f'[INFO] Cheating Detection already enabled')
+            return
+        CDClient.enabled = True
+        ProcessFramesThread = threading.Thread(target=ProcessFrames)
+        # ProcessFramesThread.setDaemon(True)
+        ProcessFramesThread.start()
+
+    @staticmethod
+    @sio.on('disable_detection', namespace='/cd')
+    def disable_detection(message):
+        print("[INFO] Disabling Cheating Detection")
+        if not CDClient.enabled:
+            print(f'[INFO] Cheating Detection already disabled')
+            return
+        CDClient.enabled = False
+
+    @staticmethod
+    @sio.on('push_to_imageQueue', namespace='/cd')
+    def push_to_imageQueue(message):
+        with lock:
+            image = Streamer.convert_jpeg_to_image(message['message'])
+            CDClient.imageQueue.append(image)
+            print("Image Received")
 
 def ProcessFrames():
-    global imageChanged
-    while enabled:
-        time.sleep(0.01)
-        # if not imageQueue:
-        if image is None or not imageChanged:
-            print("Im at a bottleneck that shouldnt be happening!")
-            time.sleep(0.2)
-            continue
-        # frame = imageQueue.popleft()
-        frame = image
-        output = cheatDetection.GeneratePose(frame)
-        output = cheatDetection.DetectCheat()
-        streamer.send_data(Streamer.convert_image_to_jpeg(output))
-        imageChanged = True
-
-
-ProcessFramesThread = threading.Thread(target=ProcessFrames)
-
-# def OutputFrames():
-#     while enabled:
-#         if not outputQueue:
-#             print("output queue is empty!")
-#             time.sleep(0)
-#             continue
-#         output = outputQueue.popleft()
-#         streamer.send_data(Streamer.convert_image_to_jpeg(output))
-# OutputFramesThread = threading.Thread(target=OutputFrames)
-
-
-def cheatDetectionClient(_server_addr, _stream_fps, _server_port):
-    global streamer
-    streamer = Streamer('cd', _server_addr, _server_port, _stream_fps).setup()
-    sio.wait()
-
-    global ProcessFramesThread
-    ProcessFramesThread = threading.Thread(target=ProcessFrames)
-    ProcessFramesThread.setDaemon(True)
-    # global OutputFramesThread
-    # OutputFramesThread= threading.Thread(target=OutputFrames)
-    # OutputFramesThread.setDaemon(True)
-
-
-@sio.on('push_to_imageQueue', namespace='/cd')
-def push_to_imageQueue(message):
-    global image
-    image = Streamer.convert_jpeg_to_image(message['message'])
-    global imageChanged
-    imageChanged = True
-    # imageQueue = append(image)
-
-
-@sio.on('enable_detection', namespace='/cd')
-def enable_detection(message):
-    print("[INFO] Enabled Cheating Detection")
-    global enabled
-    if enabled:
-        print(f'[INFO] Cheating Detection already enabled')
-        return
-    enabled = True
-    ProcessFramesThread.start()
-    # OutputFramesThread.start()
-
-
-@sio.on('disable_detection', namespace='/cd')
-def disable_detection(self):
-    print("[INFO] Disabled Cheating Detection")
-    global enabled
-    if not enabled:
-        print(f'[INFO] Cheating Detection already disabled')
-        return
-    enabled = False
-    global ProcessFramesThread
-    ProcessFramesThread = threading.Thread(target=ProcessFrames)
-    ProcessFramesThread.setDaemon(True)
-    # global OutputFramesThread
-    # OutputFramesThread= threading.Thread(target=OutputFrames)
-    # OutputFramesThread.setDaemon(True)
+    while CDClient.enabled:
+        with lock:
+            if not CDClient.imageQueue:
+                time.sleep(0.01)
+                continue
+            frame = CDClient.imageQueue.pop()
+            CDClient.imageQueue.clear()
+            # frame = CDClient.cheatDetection.GeneratePose(frame)
+            # frame = CDClient.cheatDetection.DetectCheat()
+            CDClient.streamer.send_data(frame,1)
+            # print("Done Processing Cheat Detection")
+        # print(f"collected{gc.collect()}")
+    print("[INFO] ProcessFrames Thread is stopped")
