@@ -75,8 +75,8 @@ class Streamer:
         # Encode frame in base64 representation and remove
         # utf-8 encoding
         frame = base64.b64encode(frame).decode('utf-8')
-        output = "data:image/jpeg;base64,{}".format(frame)
-        return output
+        jpeg = "data:image/jpeg;base64,{}".format(frame)
+        return jpeg
 
     @staticmethod
     def convert_jpeg_to_image(jpeg):
