@@ -43,10 +43,14 @@ class Streamer:
         time.sleep(1)
         return self
 
-    def send_data(self, message):
+    def send_data(self, message,conversion=0):
         cur_t = time.time()
         if cur_t - self._last_update_t > self._wait_t:
             self._last_update_t = cur_t
+            if conversion == 1:
+                message = Streamer.convert_image_to_jpeg(message)
+            elif conversion == 2:
+                message = Streamer.convert_jpeg_to_image(message)
             sio.emit(
                 f'{self.namespace}2server',
                 {
