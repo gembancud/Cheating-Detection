@@ -50,7 +50,7 @@ class NanoClient:
 
 def CVCamera():
     NanoClient.isRunning = True
-    NanoClient.Cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+    NanoClient.Cap = cv2.VideoCapture(0)
     if not NanoClient.Cap.isOpened():
         raise RuntimeError('Could not start camera.')
     while NanoClient.enabled:
