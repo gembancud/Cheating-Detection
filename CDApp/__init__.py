@@ -2,10 +2,9 @@ from flask import Flask, render_template, Response, request
 from engineio.payload import Payload
 from flask_socketio import SocketIO
 
-Payload.max_decode_packets = 50
+Payload.max_decode_packets = 100
 app = Flask(__name__)
 socketio = SocketIO(app, async_mode="eventlet")
-
 
 @app.route('/')
 def index():
@@ -65,6 +64,8 @@ def handle_nano_message(message):
 
 
 @socketio.on('cd2server')
-def handle_nano_message(message):
+def handle_cheat_detection(message):
     print("updating image")
     socketio.emit('change_web_image', message, namespace='/web')
+
+
