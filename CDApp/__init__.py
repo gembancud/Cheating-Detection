@@ -59,13 +59,13 @@ def disconnect_nano():
 @socketio.on('nano2server')
 def handle_nano_message(message):
     print("pushing to cheat detection")
-    # socketio.emit('push_to_imageQueue', message, namespace='/cd')
+    socketio.emit('push_to_imageQueue', message, namespace='/cd')
+    # socketio.emit('change_web_image', message, namespace='/web')
+
+
+@socketio.on('cd2server')
+def handle_cheat_detection(message):
+    print("updating image")
     socketio.emit('change_web_image', message, namespace='/web')
-
-
-# @socketio.on('cd2server')
-# def handle_cheat_detection(message):
-#     print("updating image")
-#     socketio.emit('change_web_image', message, namespace='/web')
 
 

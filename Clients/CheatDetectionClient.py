@@ -58,6 +58,7 @@ class CDClient:
 
 def ProcessFrames():
     while CDClient.enabled:
+        time.sleep(0.01)
         with lock:
             if not CDClient.imageQueue:
                 time.sleep(0.1)
