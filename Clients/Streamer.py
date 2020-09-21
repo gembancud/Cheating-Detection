@@ -75,12 +75,12 @@ class Streamer:
         # Encode frame in base64 representation and remove
         # utf-8 encoding
         frame = base64.b64encode(frame).decode('utf-8')
-        jpeg = "data:image/jpeg;base64,{}".format(frame)
-        return jpeg
+        output = "data:image/jpeg;base64,{}".format(frame)
+        return output
 
     @staticmethod
     def convert_jpeg_to_image(jpeg):
-        # Encode frame as jpeg
+        # Encode jpeg as frame
         frame = jpeg.replace("data:image/jpeg;base64,", "").encode('utf-8')
         im_bytes = base64.b64decode(frame)
         im_arr = np.frombuffer(

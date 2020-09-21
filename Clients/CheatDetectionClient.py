@@ -15,7 +15,7 @@ class CDClient:
     enabled = False
 
     imageQueue = deque([])
-    cheatDetection = CheatDetection()
+    # cheatDetection = CheatDetection()
 
     def __init__(self,_server_addr, _stream_fps, _server_port):
         CDClient.streamer = Streamer('cd', _server_addr, _server_port, _stream_fps).setup()
@@ -60,7 +60,7 @@ def ProcessFrames():
     while CDClient.enabled:
         with lock:
             if not CDClient.imageQueue:
-                time.sleep(0.01)
+                time.sleep(0.1)
                 continue
             frame = CDClient.imageQueue.pop()
             CDClient.imageQueue.clear()
