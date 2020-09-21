@@ -129,7 +129,10 @@ git clone https://github.com/gembancud/Cheating-Detection.git
 ```sh
 pip install -r requirements.txt
 ```
-3. Download [Compiled OpenPose Models](https://drive.google.com/file/d/1OmsF-PqlyDessAruHpESvOnC89eAl4Vz/view?usp=sharing) and move to:
+3.
+- Download [Compiled OpenPose Models + (Windows)Pyopenpose](https://drive.google.com/file/d/1OmsF-PqlyDessAruHpESvOnC89eAl4Vz/view?usp=sharing) and move to:
+- Download [(Linux)Pyopenpose library without CuDnn](https://drive.google.com/file/d/1Ax1EQ9tfd0iKBmUNynaRHffKdKQ0bvSj/view?usp=sharing) and move to:
+- Download [(Linux)Pyopenpose library with CuDnn](https://drive.google.com/file/d/1WXsR7AM23nt9AAdxuJe6jT8FpXjsOV85/view?usp=sharing) and move to:
 ```sh
 Cheating-Detection/CheatDetection/
 ```
