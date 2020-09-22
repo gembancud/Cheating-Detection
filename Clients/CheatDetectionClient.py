@@ -53,7 +53,8 @@ class CDClient:
     def push_to_imageQueue(message):
         with lock:
             image = Streamer.convert_jpeg_to_image(message['message'])
-            CDClient.imageQueue.append(image)
+            # CDClient.imageQueue.append(image)
+            CDClient.streamer.send_data(image,1)
             print("Image Received")
 
 def ProcessFrames():
@@ -68,6 +69,6 @@ def ProcessFrames():
             # frame = CDClient.cheatDetection.GeneratePose(frame)
             # frame = CDClient.cheatDetection.DetectCheat()
             CDClient.streamer.send_data(frame,1)
-            # print("Done Processing Cheat Detection")
-        # print(f"collected{gc.collect()}")
+            print("Done Processing Cheat Detection")
+        print(f"collected {gc.collect()}")
     print("[INFO] ProcessFrames Thread is stopped")
