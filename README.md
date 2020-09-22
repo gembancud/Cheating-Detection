@@ -91,10 +91,9 @@ A list of commonly used resources that I find helpful are listed in the acknowle
 ### Built With
 This section should list any major frameworks that you built your project using. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
 * [OpenPose](https://github.com/CMU-Perceptual-Computing-Lab/openpose)
-* [Flask](https://flask.palletsprojects.com/en/1.1.x/)
-* [Flask-SocketIO](https://flask-socketio.readthedocs.io/en/latest/)
-* [Python-SocketIO](https://python-socketio.readthedocs.io/en/latest/index.html)
 * [XGBoost](https://xgboost.readthedocs.io/en/latest/)
+* [Starlette](https://www.starlette.io/)
+* [VidGear](https://abhitronix.github.io/vidgear/)
 
 
 
@@ -190,9 +189,10 @@ Project Link: [https://github.com/gembancud/Cheating-Detection](https://github.c
 ## Acknowledgements
 * [OpenPose](https://github.com/CMU-Perceptual-Computing-Lab/openpose)
 * [XGBoost](https://github.com/dmlc/xgboost)
-* [Flask](https://github.com/pallets/flask)
 * [Corey Shafer](https://www.youtube.com/user/schafer5)
 * [Miguel Grinberg](https://blog.miguelgrinberg.com/index)
+* [Abhishek Thakur](https://github.com/abhiTronix)
+* [Starlette](https://www.starlette.io/)
 * [Best README Template](https://github.com/othneildrew/Best-README-Template/blob/master/README.md)
 
 
