@@ -55,7 +55,7 @@ class CheatDetection:
         else:
             model_folder =dir_path + "/models/"
         params["model_folder"] = model_folder
-        params["net_resolution"] = "-1x80"
+        params["net_resolution"] = "-1x320"
         params["output_resolution"] = "-1x320"
 
         # Starting OpenPose
@@ -86,20 +86,35 @@ class CheatDetection:
         poseCollection = self.datum.poseKeypoints
         detectedPoses = []
         if poseCollection.ndim != 0:
-            newPoseCollection = NormalizePoseCollection(poseCollection)
-            newPoseCollection = ReshapePoseCollection(newPoseCollection)
-            newPoseCollection = ConvertToDataFrame(newPoseCollection)
+            for pose in poseCollection:
+                # * Normalize Pose Collection
+                pose = NormalizePose(pose)
+                #  * Reshaping of Pose Collection
+                pose = ReshapePose(pose)
+                # * Creating a Pose Collection DataFrame
+                pose = ConvertToDataFrame(pose)
+                # * Classify Pose
+                pred = self.model.predict(pose)
+                pred = self.le.inverse_transform(pred)
+                detectedPoses.append(pred)
+
+            # newPoseCollection = NormalizePoseCollection(poseCollection)
+            # newPoseCollection = ReshapePoseCollection(newPoseCollection)
+            # newPoseCollection = ConvertToDataFrame(newPoseCollection)
+
+            # print(newPoseCollection.shape)
             
             # with concurrent.futures.ThreadPoolExecutor() as executor:
             #     newPoseCollection = [ row for index,row in newPoseCollection.iterrows() ]
             #     pred = executor.map(self.model.predict, newPoseCollection)
             #     pred = map(self.le.inverse_transform, pred)
-            #     detectedPoses.extend(list(pred))
+            #     print(str(list(pred)))
+            #     detectedPoses.append(list(pred))
 
-            for index,row in newPoseCollection.iterrows():
-                pred = self.model.predict(row)
-                pred = self.le.inverse_transform(pred)
-                detectedPoses.append(pred)
+            # for index,row in newPoseCollection.iterrows():
+            #     pred = self.model.predict(row)
+            #     pred = self.le.inverse_transform(pred)
+            #     detectedPoses.append(pred)
         
         self.datum.cvOutputData = cv2.putText(
             self.datum.cvOutputData,
@@ -113,48 +128,3 @@ class CheatDetection:
         )
         return self.datum.cvOutputData
 
-
-
-# # Process Webcam
-# cap = cv2.VideoCapture(0)
-# while cap.isOpened():
-#     ret, frame = cap.read()
-#     if not ret:
-#         break
-#     datum.cvInputData = frame
-#     # * Process Image
-#     opWrapper.emplaceAndPop([datum])
-#     poseCollection = datum.poseKeypoints
-#     detectedPoses = []
-#     if poseCollection.ndim != 0:
-#         for pose in poseCollection:
-#             # * Normalize Pose Collection
-#             pose = NormalizePose(pose)
-#             #  * Reshaping of Pose Collection
-#             pose = ReshapePose(pose)
-#             # * Creating a Pose Collection DataFrame
-#             pose = ConvertToDataFrame(pose)
-#             # * Classify Pose
-#             pred = model.predict(pose)
-#             pred = le.inverse_transform(pred)
-#             detectedPoses.append(pred)
-#     print(detectedPoses)
-#     cv2.imshow(
-#         "Frame",
-#         cv2.putText(
-#             datum.cvOutputData,
-#             f"{detectedPoses}",
-#             (10, 450),
-#             font,
-#             3,
-#             (0, 255, 0),
-#             2,
-#             cv2.LINE_AA,
-#         ),
-#     )
-#     # cv2.imshow("Frame", datum.cvOutputData)
-#     if cv2.waitKey(1) & 0xFF == ord("q"):
-#         break
-
-# cap.release()
-# cv2.destroyAllWindows()
