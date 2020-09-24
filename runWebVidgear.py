@@ -4,8 +4,8 @@ import uvicorn
 import asyncio
 import cv2
 from starlette.routing import Route
-from vidgear.gears import NetGear
-from vidgear.gears.asyncio import WebGear
+# from vidgear.gears.asyncio import WebGear
+from CDApp.myWebgear import MyWebGear
 from vidgear.gears.asyncio.helper import reducer
 from starlette.responses import StreamingResponse
 
@@ -27,7 +27,7 @@ options = {"frame_size_reduction": 40, "frame_jpeg_quality": 80,
 
 # initialize WebGear app with same source
 # also enable `logging` for debugging
-web = WebGear(source='./sample.mp4', logging=True, **options)
+web = MyWebGear(source='./sample.mp4', logging=True, **options)
 
 
 async def my_frame_producer():
