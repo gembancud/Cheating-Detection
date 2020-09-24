@@ -55,8 +55,8 @@ class CheatDetection:
         else:
             model_folder =dir_path + "/models/"
         params["model_folder"] = model_folder
-        params["net_resolution"] = "-1x320"
-        params["output_resolution"] = "-1x320"
+        params["net_resolution"] = "-1x80"
+        params["output_resolution"] = "-1x80"
 
         # Starting OpenPose
         self.opWrapper = op.WrapperPython()
