@@ -1,5 +1,6 @@
 # import required libraries
 from vidgear.gears import NetGear
+# from vidgear.gears import helper
 import cv2
 
 
@@ -20,6 +21,7 @@ while True:
     if frame is None:
         break
     # {do something with the frame here}
+    # frame =helper.reducer(frame,50)
     client.send(frame)
 
 stream.stop()
