@@ -7,7 +7,7 @@ import cv2
 options = {'max_retries':1000, } 
 
 #define Netgear Client with `receive_mode = True` and default parameter
-client = NetGear( receive_mode = False, **options)
+client = NetGear( receive_mode = False, pattern=2,  **options)
 
 # open any valid video stream(for e.g `test.mp4` file)
 # stream = VideoGear(source='./sample.mp4').start()
