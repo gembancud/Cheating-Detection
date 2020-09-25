@@ -3,7 +3,7 @@ import os
 import uvicorn
 import asyncio
 import cv2
-from starlette.routing import Route
+from starlette.routing import Route, WebSocketRoute
 # from vidgear.gears.asyncio import WebGear
 from CDApp.myWebgear import MyWebGear
 from vidgear.gears.asyncio.helper import reducer
@@ -12,7 +12,7 @@ from starlette.config import Config
 import sqlalchemy
 import databases
 
-from CDApp.routes import hello_world, startGeneratePose, stopGeneratePose, startCheatDetection, stopCheatDetection
+from CDApp.routes import hello_world, startGeneratePose, stopGeneratePose, startCheatDetection, stopCheatDetection, Echo
 from CDApp.controller import Controller
 from CheatDetection import CheatDetection
 cd = CheatDetection()
@@ -42,7 +42,8 @@ options = {"frame_size_reduction": 40, "frame_jpeg_quality": 80,
 
 # initialize WebGear app with same source
 # also enable `logging` for debugging
-web = MyWebGear(source='./sample.mp4', logging=True, database= database, **options)
+web = MyWebGear(source='./sample.mp4', logging=True,
+                database=database, **options)
 
 
 async def my_frame_producer():
@@ -58,7 +59,7 @@ async def my_frame_producer():
             frame = cd.GeneratePose(frame)
         if Controller.generatePose and Controller.detectCheat:
             frame = cd.DetectCheat()
-            
+
         # frame = reducer(frame, percentage=50)
         encodedImage = cv2.imencode('.jpg', frame)[1].tobytes()
         yield (b'--frame\r\nContent-Type:image/jpeg\r\n\r\n'+encodedImage+b'\r\n')
@@ -81,10 +82,12 @@ if __name__ == '__main__':
     web.routes.append(Route('/stopGeneratePose', stopGeneratePose))
     web.routes.append(Route('/startCheatDetect', startCheatDetection))
     web.routes.append(Route('/stopCheatDetect', stopCheatDetection))
+    web.routes.append(WebSocketRoute('/ws', Echo))
 
+    app = web()
 
     # run this app on Uvicorn server at address http://localhost:8000/
-    uvicorn.run(web(), host='localhost', port=8000)
+    uvicorn.run(app, host='localhost', port=8000)
 
     # close app safely
     web.shutdown()

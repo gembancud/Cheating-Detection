@@ -54,5 +54,32 @@ limitations under the License.
 			</div>
 		</div>
 	</nav>
+	<p class="lead">
+		<form action="" onsubmit="sendMessage(event)">
+			<input type="text" id="messageText" autocomplete="off"/>
+			<button>Send</button>
+		</form>
+		<ul id='messages' class="list-group list-group-flush bg-dark">
+		</ul>
+	</p>
+	<script>
+		var ws = new WebSocket("ws://localhost:8000/ws");
+		ws.onmessage = function(event) {
+			var messages = document.getElementById('messages')
+			var message = document.createElement('li')
+			message.className = "list-group-item bg-dark"
+			var content = document.createTextNode(event.data)
+			message.appendChild(content)
+			messages.appendChild(message)
+		};
+		function sendMessage(event) {
+			var input = document.getElementById("messageText")
+			ws.send(input.value)
+			input.value = ''
+			event.preventDefault()
+		}
+	</script>
+
+
 </main>
 {% endblock %}

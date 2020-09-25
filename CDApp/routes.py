@@ -1,6 +1,8 @@
 from starlette.templating import Jinja2Templates
 from starlette.routing import Route
 from starlette.responses import RedirectResponse
+from starlette.endpoints import WebSocketEndpoint
+
 
 
 from CDApp.controller import Controller
@@ -32,3 +34,9 @@ async def startCheatDetection(request):
 async def stopCheatDetection(request):
     Controller.detectCheat = False
     return RedirectResponse(url='/')
+
+class Echo(WebSocketEndpoint):
+    encoding = "text"
+
+    async def on_receive(self, websocket, data):
+        await websocket.send_text(f"Message text was: {data}")
