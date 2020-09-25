@@ -45,6 +45,7 @@ class Echo(WebSocketEndpoint):
             while Controller.test:
                 message = Controller.test.popleft()
                 await websocket.send_text(f"Gamay kag: {message}")
+                await asyncio.sleep(0.01)
             await asyncio.sleep(0.01)
 
 
