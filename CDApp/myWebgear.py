@@ -56,6 +56,7 @@ class MyWebGear:
         framerate=25,
         logging=False,
         time_delay=0,
+        database=None,
         **options
     ):
 
@@ -65,6 +66,7 @@ class MyWebGear:
         self.__jpeg_progressive = 0  # jpeg will be baseline instead
         self.__frame_size_reduction = 20  # 20% reduction
         self.__logging = logging
+        self.__database = database
 
         custom_data_location = ""  # path to save data-files to custom location
         data_path = ""  # path to WebGear data-files
@@ -222,7 +224,8 @@ class MyWebGear:
             debug=(True if self.__logging else False),
             routes=self.routes,
             exception_handlers=self.__exception_handlers,
-            on_shutdown=[self.shutdown],
+            on_startup=[self.__database.connect],
+            on_shutdown=[self.shutdown, self.__database.disconnect],
         )
 
     async def __producer(self):
