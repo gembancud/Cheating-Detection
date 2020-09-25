@@ -60,6 +60,8 @@ async def my_frame_producer():
         if Controller.generatePose and Controller.detectCheat:
             frame = cd.DetectCheat()
 
+        Controller.test.append("oten")
+
         # frame = reducer(frame, percentage=50)
         encodedImage = cv2.imencode('.jpg', frame)[1].tobytes()
         yield (b'--frame\r\nContent-Type:image/jpeg\r\n\r\n'+encodedImage+b'\r\n')

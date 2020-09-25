@@ -1,4 +1,5 @@
 from vidgear.gears import NetGear
+from collections import deque
 
 options = {'max_retries':1000, } 
 
@@ -8,4 +9,5 @@ class Controller:
     server = NetGear(receive_mode=True, logging=True, pattern=2, **options)
     generatePose = False
     detectCheat = False
+    test = deque()
 
