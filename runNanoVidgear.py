@@ -38,9 +38,9 @@ client = NetGear( receive_mode = False, pattern=2,  **options)
 
 # open any valid video stream(for e.g `test.mp4` file)
 # stream = VideoGear(source='./sample.mp4').start()
-# stream = cv2.VideoCapture(0)
-print(gstreamer_pipeline(flip_method=0))
-stream = cv2.VideoCapture(gstreamer_pipeline(flip_method=0), cv2.CAP_GSTREAMER)
+stream = cv2.VideoCapture(0)
+# print(gstreamer_pipeline(flip_method=0))
+# stream = cv2.VideoCapture(gstreamer_pipeline(flip_method=0), cv2.CAP_GSTREAMER)
 
 # loop over
 while True:

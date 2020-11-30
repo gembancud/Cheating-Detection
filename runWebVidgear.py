@@ -45,8 +45,11 @@ options = {"frame_size_reduction": 40, "frame_jpeg_quality": 80,
 web = MyWebGear(source='./sample.mp4', logging=True,
                 database=database, **options)
 
+FRAME_SKIP_CONSTANT = 3
+
 
 async def my_frame_producer():
+    frame_counter = 0
 
     while True:
         frame = Controller.server.recv()
@@ -56,6 +59,10 @@ async def my_frame_producer():
 
         # Do CheatDetection Here
         if Controller.generatePose:
+            frame_counter += 1
+            if frame_counter == FRAME_SKIP_CONSTANT:
+                frame_counter = 0
+                continue
             frame = cd.GeneratePose(frame)
         if Controller.generatePose and Controller.detectCheat:
             frame = cd.DetectCheat()
