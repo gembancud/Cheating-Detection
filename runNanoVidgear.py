@@ -1,5 +1,5 @@
 # import required libraries
-from vidgear.gears import NetGear
+from vidgear.gears import NetGear,VideoGear
 # from vidgear.gears import helper
 import cv2
 
@@ -36,9 +36,14 @@ options = {'max_retries':1000, }
 #define Netgear Client with `receive_mode = True` and default parameter
 client = NetGear( receive_mode = False, pattern=2,  **options)
 
-# open any valid video stream(for e.g `test.mp4` file)
+
+# Run NanoVidGear Video
 # stream = VideoGear(source='./sample.mp4').start()
+
+# Run NanoVidgear PC Webcam
 stream = cv2.VideoCapture(0)
+
+# Run NanoVidgear Nano Webcam
 # print(gstreamer_pipeline(flip_method=0))
 # stream = cv2.VideoCapture(gstreamer_pipeline(flip_method=0), cv2.CAP_GSTREAMER)
 
