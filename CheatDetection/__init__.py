@@ -9,6 +9,8 @@ from .utils import (
     CreateArtificialPoseCollection,
     ConvertToDataFrame,
     GetColumnNames,
+    DrawBoundingRectangle,
+    GetBoundingBoxCoords,
 )
 import sys
 import cv2
@@ -20,7 +22,6 @@ import numpy as np
 import random
 import copy
 import pandas as pd
-import glob
 from xgboost import XGBClassifier
 from sklearn.preprocessing import LabelEncoder
 import concurrent.futures
@@ -87,6 +88,7 @@ class CheatDetection:
         detectedPoses = []
         if poseCollection.ndim != 0:
             for pose in poseCollection:
+                original_pose = copy.deepcopy(pose)
                 # * Normalize Pose Collection
                 pose = NormalizePose(pose)
                 #  * Reshaping of Pose Collection
@@ -97,6 +99,10 @@ class CheatDetection:
                 pred = self.model.predict(pose)
                 pred = self.le.inverse_transform(pred)
                 detectedPoses.append(pred)
+
+                # * Draw BoundingBox
+                if pred == "cheating":
+                    datum.cvOutputData = DrawBoundingRectangle(datum.cvOutputData, GetBoundingBoxCoords(original_pose))
 
             # newPoseCollection = NormalizePoseCollection(poseCollection)
             # newPoseCollection = ReshapePoseCollection(newPoseCollection)

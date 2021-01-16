@@ -3,6 +3,7 @@ import numpy as np
 import random
 import copy
 import pandas as pd
+import cv2
 
 # THIS FUNCTION CONVERTS THE INPUTTED POSE COLLECTION INTO A DISTRIBUTION [0,1] FOR EVERY KEYPOINT.
 # IT ADDITIONALLY FLIPS THE Y DIMENSION TO REFLECT A CARTESIAN COORDINATE SYSTEM
@@ -176,6 +177,27 @@ def GetColumnNames():
                                               'kp19_X', 'kp19_Y', 'kp19_Z', 'kp20_X', 'kp20_Y', 'kp20_Z',\
                                                    'kp21_X', 'kp21_Y', 'kp21_Z', 'kp22_X', 'kp22_Y', 'kp22_Z',\
                                                         'kp23_X', 'kp23_Y', 'kp23_Z', 'kp24_X', 'kp24_Y', 'kp24_Z']
+
+def GetBoundingBoxCoords(pose):
+    # Compute the Maximum bounds in dimensions X and Y of the pose
+    maxX, minX = -math.inf, math.inf
+    maxY, minY = -math.inf, math.inf
+    for keyPoint in pose:
+        if keyPoint[2] == 0:
+            continue
+        if keyPoint[0] > maxX:
+            maxX = keyPoint[0]
+        if keyPoint[0] < minX:
+            minX = keyPoint[0]
+        if keyPoint[1] > maxY:
+            maxY = keyPoint[1]
+        if keyPoint[1] < minY:
+            minY = keyPoint[1]
+    return [(minX, minY), (maxX, maxY)]
+
+
+def DrawBoundingRectangle(image, point, color=(0, 0, 255), thickness=2):
+    return cv2.rectangle(image, point[0], point[1], color, thickness)
 
 def TestAccess():
     print("Test Success")
