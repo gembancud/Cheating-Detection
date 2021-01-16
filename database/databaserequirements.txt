@@ -1,0 +1,4 @@
+Django
+djangorestframework
+Pillow
+django-cleanup

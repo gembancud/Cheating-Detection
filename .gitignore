@@ -146,3 +146,4 @@ CheatDetection/x64/
 *.mp4
 linuxvenv/
 .vscode/
+database/media/
