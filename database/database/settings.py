@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'core',
     'rest',
+    'rest_framework',
     'django_cleanup.apps.CleanupConfig',
 ]
 
