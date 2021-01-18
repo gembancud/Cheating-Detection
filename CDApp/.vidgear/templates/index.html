@@ -65,7 +65,7 @@ limitations under the License.
     <a href="#" id="donwload-link" onClick="myFunction()">download html content</a>
 
     <script>
-        var ws = new WebSocket("ws://localhost:8000/ws");
+        var ws = new WebSocket("ws://localhost:8001/ws");
         ws.onmessage = function (event) {
             var messages = document.getElementById('messages')
             var message = document.createElement('li')
@@ -89,9 +89,9 @@ limitations under the License.
         function download(content, fileName, fileType) {
             var link = document.getElementById("donwload-link");
             var file = new Blob([content], { type: fileType });
-            var donwloadFile = fileName + "." + fileType;
+            var downloadFile = fileName + "." + fileType;
             link.href = URL.createObjectURL(file);
-            link.download = donwloadFile
+            link.download = downloadFile
         }
     </script>
 

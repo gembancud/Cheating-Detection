@@ -82,7 +82,8 @@ class MyWebGear:
                 if isinstance(value, (int, float)) and value >= 0 and value <= 90:
                     self.__frame_size_reduction = value
                 else:
-                    logger.warning("Skipped invalid `frame_size_reduction` value!")
+                    logger.warning(
+                        "Skipped invalid `frame_size_reduction` value!")
                 del options["frame_size_reduction"]  # clean
 
             if "frame_jpeg_quality" in options:
@@ -90,7 +91,8 @@ class MyWebGear:
                 if isinstance(value, (int, float)) and value >= 10 and value <= 95:
                     self.__jpeg_quality = int(value)
                 else:
-                    logger.warning("Skipped invalid `frame_jpeg_quality` value!")
+                    logger.warning(
+                        "Skipped invalid `frame_jpeg_quality` value!")
                 del options["frame_jpeg_quality"]  # clean
 
             if "frame_jpeg_optimize" in options:
@@ -98,7 +100,8 @@ class MyWebGear:
                 if isinstance(value, bool):
                     self.__jpeg_optimize = int(value)
                 else:
-                    logger.warning("Skipped invalid `frame_jpeg_optimize` value!")
+                    logger.warning(
+                        "Skipped invalid `frame_jpeg_optimize` value!")
                 del options["frame_jpeg_optimize"]  # clean
 
             if "frame_jpeg_progressive" in options:
@@ -106,7 +109,8 @@ class MyWebGear:
                 if isinstance(value, bool):
                     self.__jpeg_progressive = int(value)
                 else:
-                    logger.warning("Skipped invalid `frame_jpeg_progressive` value!")
+                    logger.warning(
+                        "Skipped invalid `frame_jpeg_progressive` value!")
                 del options["frame_jpeg_progressive"]  # clean
 
             if "custom_data_location" in options:
@@ -122,7 +126,8 @@ class MyWebGear:
                     ), "[WebGear:ERROR] :: `custom_data_location` value must be the path to a directory and not to a file!"
                     custom_data_location = os.path.abspath(value)
                 else:
-                    logger.warning("Skipped invalid `custom_data_location` value!")
+                    logger.warning(
+                        "Skipped invalid `custom_data_location` value!")
                 del options["custom_data_location"]  # clean
 
             if "overwrite_default_files" in options:
@@ -130,7 +135,8 @@ class MyWebGear:
                 if isinstance(value, bool):
                     overwrite_default = value
                 else:
-                    logger.warning("Skipped invalid `overwrite_default_files` value!")
+                    logger.warning(
+                        "Skipped invalid `overwrite_default_files` value!")
                 del options["overwrite_default_files"]  # clean
 
         # # define stream with necessary params
@@ -184,10 +190,12 @@ class MyWebGear:
             )
 
         # define Jinja2 templates handler
-        self.__templates = Jinja2Templates(directory="{}/templates".format(data_path))
+        self.__templates = Jinja2Templates(
+            directory="{}/templates".format(data_path))
 
         # define custom exception handlers
-        self.__exception_handlers = {404: self.__not_found, 500: self.__server_error}
+        self.__exception_handlers = {
+            404: self.__not_found, 500: self.__server_error}
         # define routing tables
         self.routes = [
             Route("/", endpoint=self.__homepage),

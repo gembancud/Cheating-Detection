@@ -11,6 +11,7 @@ from starlette.responses import StreamingResponse
 from starlette.config import Config
 import sqlalchemy
 import databases
+import requests
 
 from CDApp.routes import hello_world, startGeneratePose, stopGeneratePose, startCheatDetection, stopCheatDetection, Echo
 from CDApp.controller import Controller
@@ -65,7 +66,9 @@ async def my_frame_producer():
                 continue
             frame = cd.GeneratePose(frame)
         if Controller.generatePose and Controller.detectCheat:
-            frame = cd.DetectCheat()
+            frame, cheating = cd.DetectCheat()
+            if cheating:
+                send_image(frame)
 
         # Do Live Updates
         # Controller.test.append("oten")
@@ -76,7 +79,17 @@ async def my_frame_producer():
         await asyncio.sleep(0.01)
 
 
+def send_image(frame, url="http://localhost:8000/api/core/snapshot/"):
+    imencoded = cv2.imencode(".jpg", frame)[1]
+    file = {'image': ('image.jpg', imencoded.tostring(),
+                      'image/jpeg', {'Expires': '0'})}
+    data = {'title': Controller.title, }
+    response = requests.post(url, files=file, data=data, timeout=5)
+    return response
+
 # now create your own streaming response server
+
+
 async def video_server(scope):
     Controller.enabled = True
     assert scope['type'] == 'http'
@@ -97,7 +110,7 @@ if __name__ == '__main__':
     app = web()
 
     # run this app on Uvicorn server at address http://localhost:8000/
-    uvicorn.run(app, host='localhost', port=8000)
+    uvicorn.run(app, host='localhost', port=8001)
 
     # close app safely
     web.shutdown()

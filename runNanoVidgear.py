@@ -1,7 +1,8 @@
 # import required libraries
-from vidgear.gears import NetGear,VideoGear
+from vidgear.gears import NetGear, VideoGear
 # from vidgear.gears import helper
 import cv2
+
 
 def gstreamer_pipeline(
     capture_width=1280,
@@ -31,10 +32,10 @@ def gstreamer_pipeline(
     )
 
 
-options = {'max_retries':1000, } 
+options = {'max_retries': 1000, }
 
-#define Netgear Client with `receive_mode = True` and default parameter
-client = NetGear( receive_mode = False, pattern=2,  **options)
+# define Netgear Client with `receive_mode = True` and default parameter
+client = NetGear(receive_mode=False, pattern=2,  **options)
 
 
 # Run NanoVidGear Video

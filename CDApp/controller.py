@@ -1,7 +1,8 @@
 from vidgear.gears import NetGear
 from collections import deque
 
-options = {'max_retries':1000, } 
+options = {'max_retries': 1000, }
+
 
 class Controller:
     enabled = False
@@ -10,4 +11,4 @@ class Controller:
     generatePose = False
     detectCheat = False
     test = deque()
-
+    title = "default-title"

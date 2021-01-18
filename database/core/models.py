@@ -17,7 +17,7 @@ class Snapshot(models.Model):
         return mark_safe(f'<img src="{self.image.url}" width="150" height="150" />')
 
     def save(self, *args, **kwargs):
-        self.image = make_thumbnail(self.image)
+        # self.image = make_thumbnail(self.image)
 
         super().save(*args, **kwargs)
 

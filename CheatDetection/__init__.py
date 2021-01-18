@@ -48,16 +48,16 @@ except ImportError as e:
     print('Error: OpenPose library could not be found. Did you enable `BUILD_PYTHON` in CMake and have this Python script in the right folder?')
     raise e
 
+
 class CheatDetection:
     def __init__(self):
         params = dict()
         if platform == "win32":
             model_folder = dir_path + "./models/"
         else:
-            model_folder =dir_path + "/models/"
+            model_folder = dir_path + "/models/"
         params["model_folder"] = model_folder
-        params["net_resolution"] = "-1x80"
-        params["output_resolution"] = "-1x80"
+        params["net_resolution"] = "-1x160"
 
         # Starting OpenPose
         self.opWrapper = op.WrapperPython()
@@ -70,7 +70,7 @@ class CheatDetection:
         if platform == "win32":
             xgboost_model_path = dir_path + "./XGB_YMCA.model"
         else:
-            xgboost_model_path =dir_path + "/XGB_YMCA.model"
+            xgboost_model_path = dir_path + "/XGB_YMCA.model"
         self.model.load_model(xgboost_model_path)
 
         # Process Encoder
@@ -86,6 +86,7 @@ class CheatDetection:
     def DetectCheat(self):
         poseCollection = self.datum.poseKeypoints
         detectedPoses = []
+        cheating = False
         if poseCollection.ndim != 0:
             for pose in poseCollection:
                 original_pose = copy.deepcopy(pose)
@@ -101,27 +102,11 @@ class CheatDetection:
                 detectedPoses.append(pred)
 
                 # * Draw BoundingBox
-                if pred == "cheating":
-                    datum.cvOutputData = DrawBoundingRectangle(datum.cvOutputData, GetBoundingBoxCoords(original_pose))
+                if pred == "Y":
+                    self.datum.cvOutputData = DrawBoundingRectangle(
+                        self.datum.cvOutputData, GetBoundingBoxCoords(original_pose))
+                    cheating = True
 
-            # newPoseCollection = NormalizePoseCollection(poseCollection)
-            # newPoseCollection = ReshapePoseCollection(newPoseCollection)
-            # newPoseCollection = ConvertToDataFrame(newPoseCollection)
-
-            # print(newPoseCollection.shape)
-            
-            # with concurrent.futures.ThreadPoolExecutor() as executor:
-            #     newPoseCollection = [ row for index,row in newPoseCollection.iterrows() ]
-            #     pred = executor.map(self.model.predict, newPoseCollection)
-            #     pred = map(self.le.inverse_transform, pred)
-            #     print(str(list(pred)))
-            #     detectedPoses.append(list(pred))
-
-            # for index,row in newPoseCollection.iterrows():
-            #     pred = self.model.predict(row)
-            #     pred = self.le.inverse_transform(pred)
-            #     detectedPoses.append(pred)
-        
         self.datum.cvOutputData = cv2.putText(
             self.datum.cvOutputData,
             ' '.join(map(str, detectedPoses)),
@@ -132,5 +117,4 @@ class CheatDetection:
             2,
             cv2.LINE_AA,
         )
-        return self.datum.cvOutputData
-
+        return self.datum.cvOutputData, cheating
