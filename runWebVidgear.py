@@ -3,18 +3,34 @@ import os
 import uvicorn
 import asyncio
 import cv2
-from starlette.routing import Route
-from vidgear.gears import NetGear
-from vidgear.gears.asyncio import WebGear
+from starlette.routing import Route, WebSocketRoute
+# from vidgear.gears.asyncio import WebGear
+from CDApp.myWebgear import MyWebGear
 from vidgear.gears.asyncio.helper import reducer
 from starlette.responses import StreamingResponse
+from starlette.config import Config
+import sqlalchemy
+import databases
+import requests
 
-from CDApp.routes import hello_world, startGeneratePose, stopGeneratePose, startCheatDetection, stopCheatDetection
-
+from CDApp.routes import hello_world, startGeneratePose, stopGeneratePose, startCheatDetection, stopCheatDetection, Echo
 from CDApp.controller import Controller
-
 from CheatDetection import CheatDetection
 cd = CheatDetection()
+
+config = Config('.env')
+DATABASE_URL = config('DATABASE_URL')
+
+metadata = sqlalchemy.MetaData()
+
+report = sqlalchemy.Table(
+    "reports",
+    metadata,
+    sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
+    sqlalchemy.Column("confirmed", sqlalchemy.Boolean),
+)
+
+database = databases.Database(DATABASE_URL)
 
 path = os.path.abspath(__file__)
 dir_path = os.path.dirname(path)
@@ -27,10 +43,14 @@ options = {"frame_size_reduction": 40, "frame_jpeg_quality": 80,
 
 # initialize WebGear app with same source
 # also enable `logging` for debugging
-web = WebGear(source='./sample.mp4', logging=True, **options)
+web = MyWebGear(source='./sample.mp4', logging=True,
+                database=database, **options)
+
+FRAME_SKIP_CONSTANT = 3
 
 
 async def my_frame_producer():
+    frame_counter = 0
 
     while True:
         frame = Controller.server.recv()
@@ -40,9 +60,18 @@ async def my_frame_producer():
 
         # Do CheatDetection Here
         if Controller.generatePose:
+            frame_counter += 1
+            if frame_counter == FRAME_SKIP_CONSTANT:
+                frame_counter = 0
+                continue
             frame = cd.GeneratePose(frame)
         if Controller.generatePose and Controller.detectCheat:
-            frame = cd.DetectCheat()
+            frame, cheating = cd.DetectCheat()
+            if cheating:
+                send_image(frame)
+
+        # Do Live Updates
+        # Controller.test.append("oten")
 
         # frame = reducer(frame, percentage=50)
         encodedImage = cv2.imencode('.jpg', frame)[1].tobytes()
@@ -50,7 +79,17 @@ async def my_frame_producer():
         await asyncio.sleep(0.01)
 
 
+def send_image(frame, url="http://localhost:8000/api/core/snapshot/"):
+    imencoded = cv2.imencode(".jpg", frame)[1]
+    file = {'image': ('image.jpg', imencoded.tostring(),
+                      'image/jpeg', {'Expires': '0'})}
+    data = {'title': Controller.title, }
+    response = requests.post(url, files=file, data=data, timeout=5)
+    return response
+
 # now create your own streaming response server
+
+
 async def video_server(scope):
     Controller.enabled = True
     assert scope['type'] == 'http'
@@ -66,9 +105,12 @@ if __name__ == '__main__':
     web.routes.append(Route('/stopGeneratePose', stopGeneratePose))
     web.routes.append(Route('/startCheatDetect', startCheatDetection))
     web.routes.append(Route('/stopCheatDetect', stopCheatDetection))
+    web.routes.append(WebSocketRoute('/ws', Echo))
+
+    app = web()
 
     # run this app on Uvicorn server at address http://localhost:8000/
-    uvicorn.run(web(), host='localhost', port=8000)
+    uvicorn.run(app, host='localhost', port=8001)
 
     # close app safely
     web.shutdown()

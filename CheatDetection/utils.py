@@ -3,6 +3,7 @@ import numpy as np
 import random
 import copy
 import pandas as pd
+import cv2
 
 # THIS FUNCTION CONVERTS THE INPUTTED POSE COLLECTION INTO A DISTRIBUTION [0,1] FOR EVERY KEYPOINT.
 # IT ADDITIONALLY FLIPS THE Y DIMENSION TO REFLECT A CARTESIAN COORDINATE SYSTEM
@@ -164,18 +165,41 @@ def GetColumnNames():
     #     columnNames.append("kp" + str(i) + "_Y")
     #     columnNames.append("kp" + str(i) + "_Z")
     # return columnNames
-    return ['kp0_X', 'kp0_Y', 'kp0_Z', 'kp1_X', 'kp1_Y', 'kp1_Z', \
-        'kp2_X', 'kp2_Y', 'kp2_Z', 'kp3_X', 'kp3_Y', 'kp3_Z', 'kp4_X', \
-            'kp4_Y', 'kp4_Z', 'kp5_X', 'kp5_Y', 'kp5_Z', 'kp6_X', 'kp6_Y',\
-                 'kp6_Z', 'kp7_X', 'kp7_Y', 'kp7_Z', 'kp8_X', 'kp8_Y', 'kp8_Z',\
-                      'kp9_X', 'kp9_Y', 'kp9_Z', 'kp10_X', 'kp10_Y', 'kp10_Z', \
-                          'kp11_X', 'kp11_Y', 'kp11_Z', 'kp12_X', 'kp12_Y', 'kp12_Z',\
-                               'kp13_X', 'kp13_Y', 'kp13_Z', 'kp14_X', 'kp14_Y', 'kp14_Z',\
-                                    'kp15_X', 'kp15_Y', 'kp15_Z', 'kp16_X', 'kp16_Y', 'kp16_Z',\
-                                         'kp17_X', 'kp17_Y', 'kp17_Z', 'kp18_X', 'kp18_Y', 'kp18_Z',\
-                                              'kp19_X', 'kp19_Y', 'kp19_Z', 'kp20_X', 'kp20_Y', 'kp20_Z',\
-                                                   'kp21_X', 'kp21_Y', 'kp21_Z', 'kp22_X', 'kp22_Y', 'kp22_Z',\
-                                                        'kp23_X', 'kp23_Y', 'kp23_Z', 'kp24_X', 'kp24_Y', 'kp24_Z']
+    return ['kp0_X', 'kp0_Y', 'kp0_Z', 'kp1_X', 'kp1_Y', 'kp1_Z',
+            'kp2_X', 'kp2_Y', 'kp2_Z', 'kp3_X', 'kp3_Y', 'kp3_Z', 'kp4_X',
+            'kp4_Y', 'kp4_Z', 'kp5_X', 'kp5_Y', 'kp5_Z', 'kp6_X', 'kp6_Y',
+            'kp6_Z', 'kp7_X', 'kp7_Y', 'kp7_Z', 'kp8_X', 'kp8_Y', 'kp8_Z',
+            'kp9_X', 'kp9_Y', 'kp9_Z', 'kp10_X', 'kp10_Y', 'kp10_Z',
+            'kp11_X', 'kp11_Y', 'kp11_Z', 'kp12_X', 'kp12_Y', 'kp12_Z',
+            'kp13_X', 'kp13_Y', 'kp13_Z', 'kp14_X', 'kp14_Y', 'kp14_Z',
+            'kp15_X', 'kp15_Y', 'kp15_Z', 'kp16_X', 'kp16_Y', 'kp16_Z',
+            'kp17_X', 'kp17_Y', 'kp17_Z', 'kp18_X', 'kp18_Y', 'kp18_Z',
+            'kp19_X', 'kp19_Y', 'kp19_Z', 'kp20_X', 'kp20_Y', 'kp20_Z',
+            'kp21_X', 'kp21_Y', 'kp21_Z', 'kp22_X', 'kp22_Y', 'kp22_Z',
+            'kp23_X', 'kp23_Y', 'kp23_Z', 'kp24_X', 'kp24_Y', 'kp24_Z']
+
+
+def GetBoundingBoxCoords(pose):
+    # Compute the Maximum bounds in dimensions X and Y of the pose
+    maxX, minX = -math.inf, math.inf
+    maxY, minY = -math.inf, math.inf
+    for keyPoint in pose:
+        if keyPoint[2] == 0:
+            continue
+        if keyPoint[0] > maxX:
+            maxX = keyPoint[0]
+        if keyPoint[0] < minX:
+            minX = keyPoint[0]
+        if keyPoint[1] > maxY:
+            maxY = keyPoint[1]
+        if keyPoint[1] < minY:
+            minY = keyPoint[1]
+    return [(minX, minY), (maxX, maxY)]
+
+
+def DrawBoundingRectangle(image, point, color=(0, 0, 255), thickness=2):
+    return cv2.rectangle(image, point[0], point[1], color, thickness)
+
 
 def TestAccess():
     print("Test Success")
