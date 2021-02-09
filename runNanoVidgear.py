@@ -2,6 +2,7 @@
 from vidgear.gears import NetGear, VideoGear
 # from vidgear.gears import helper
 import cv2
+import argparse
 
 
 def gstreamer_pipeline(
@@ -32,34 +33,87 @@ def gstreamer_pipeline(
     )
 
 
-options = {'max_retries': 1000, }
+options = {
+    "max_retries": 1000,
+    "bidirectional_mode": True,
+    "compression_format": ".jpg",
+    "compression_param": (
+        cv2.IMREAD_COLOR,
+        [
+            cv2.IMWRITE_JPEG_QUALITY,
+            60,
+            cv2.IMWRITE_JPEG_PROGRESSIVE,
+            False,
+            cv2.IMWRITE_JPEG_OPTIMIZE,
+            True,
+        ],
+    ),
+}
 
-# define Netgear Client with `receive_mode = True` and default parameter
-client = NetGear(receive_mode=False, pattern=2,  **options)
+
+def main():
+
+    parser = argparse.ArgumentParser(description='Description of your program')
+    parser.add_argument('-a', '--address',
+                        help='address of server', default=None)
+    parser.add_argument('-d', '--device',
+                        help='desktop or nano', default='desktop')
+    parser.add_argument('-s', '--source',
+                        help='path to video', default=None)
+
+    args = parser.parse_args()
+
+    # define Netgear Client with `receive_mode = True` and default parameter
+    client = NetGear(address=args.address, receive_mode=False,
+                     pattern=1,  **options)
+
+    # Run NanoVidGear Video
+    # stream = VideoGear(source='./sample.mp4').start()
+
+    # Run NanoVidgear PC Webcam
+    if args.device == "desktop":
+        if args.source:
+            stream = cv2.VideoCapture(args.source)
+        else:
+            stream = cv2.VideoCapture(0)
+
+    elif args.device == "nano":
+        stream = cv2.VideoCapture(gstreamer_pipeline(
+            flip_method=0), cv2.CAP_GSTREAMER)
+
+    # loop over
+    if args.source:
+        frame_counter = 0
+        while True:
+        # receive frames from network
+            (grabbed, frame) = stream.read()
+            # check for received frame if Nonetype
+            if frame is None:
+                break
+            frame_counter += 1
+            if frame_counter == stream.get(cv2.CAP_PROP_FRAME_COUNT):
+                frame_counter=0
+                stream.set(cv2.CAP_PROP_POS_FRAMES,0)
+            # {do something with the frame here}
+            # frame =helper.reducer(frame,50)
+            client.send(frame)
+
+    else:
+        while True:
+            # receive frames from network
+            (grabbed, frame) = stream.read()
+            # check for received frame if Nonetype
+            if frame is None:
+                break
+            # {do something with the frame here}
+            # frame =helper.reducer(frame,50)
+            client.send(frame)
+
+    stream.stop()
+
+    # safely close client
+    client.close()
 
 
-# Run NanoVidGear Video
-# stream = VideoGear(source='./sample.mp4').start()
-
-# Run NanoVidgear PC Webcam
-stream = cv2.VideoCapture(0)
-
-# Run NanoVidgear Nano Webcam
-# print(gstreamer_pipeline(flip_method=0))
-# stream = cv2.VideoCapture(gstreamer_pipeline(flip_method=0), cv2.CAP_GSTREAMER)
-
-# loop over
-while True:
-    # receive frames from network
-    (grabbed, frame) = stream.read()
-    # check for received frame if Nonetype
-    if frame is None:
-        break
-    # {do something with the frame here}
-    # frame =helper.reducer(frame,50)
-    client.send(frame)
-
-stream.stop()
-
-# safely close client
-client.close()
+if __name__ == "__main__":
+    main()

@@ -12,11 +12,16 @@ dir_path = os.path.dirname(path)
 template = Jinja2Templates(directory=dir_path+'/templates')
 
 
-async def hello_world(request):
-    Controller.isfocused = False
-    page = "hello.html"
-    context = {"request": request}
-    return template.TemplateResponse(page, context)
+async def startAll(request):
+    Controller.generatePose = True
+    Controller.detectCheat = True
+    return RedirectResponse(url='/')
+
+
+async def stopAll(request):
+    Controller.generatePose = False
+    Controller.detectCheat = False
+    return RedirectResponse(url='/')
 
 
 async def startGeneratePose(request):
@@ -54,4 +59,4 @@ class Echo(WebSocketEndpoint):
 
     async def on_receive(self, websocket, data):
         Controller.title = data
-        await websocket.send_text(f"Message text was: {data}")
+        await websocket.send_text(f"Cheating detections are now titled: {data}")

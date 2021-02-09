@@ -51,13 +51,14 @@ except ImportError as e:
 
 class CheatDetection:
     def __init__(self):
-        params = dict()
         if platform == "win32":
             model_folder = dir_path + "./models/"
         else:
             model_folder = dir_path + "/models/"
+        params = dict()
         params["model_folder"] = model_folder
-        params["net_resolution"] = "-1x160"
+        params["net_resolution"] = "-1x320"
+        params["process_real_time"] = True
 
         # Starting OpenPose
         self.opWrapper = op.WrapperPython()
@@ -67,15 +68,9 @@ class CheatDetection:
 
         # Starting XGBoost
         self.model = XGBClassifier()
-        if platform == "win32":
-            xgboost_model_path = dir_path + "./XGB_YMCA.model"
-        else:
-            xgboost_model_path = dir_path + "/XGB_YMCA.model"
+        xgboost_model_path = dir_path + "./XGB_BiCD_Tuned_GPU_05.model"
         self.model.load_model(xgboost_model_path)
-
-        # Process Encoder
-        self.le = LabelEncoder()
-        self.le.fit(["Y", "M", "C", "A"])
+        self.model.set_params(**{"predictor": "gpu_predictor"})
 
     def GeneratePose(self, img):
         # datum = op.Datum()
@@ -83,10 +78,15 @@ class CheatDetection:
         self.opWrapper.emplaceAndPop([self.datum])
         return self.datum.cvOutputData
 
-    def DetectCheat(self):
+    def DetectCheat(self,ShowPose=True, img=None):
         poseCollection = self.datum.poseKeypoints
         detectedPoses = []
         cheating = False
+        if ShowPose == True:
+            OutputImage = self.datum.cvOutputData
+        else:
+            OutputImage = self.datum.cvInputData
+
         if poseCollection.ndim != 0:
             for pose in poseCollection:
                 original_pose = copy.deepcopy(pose)
@@ -98,23 +98,11 @@ class CheatDetection:
                 pose = ConvertToDataFrame(pose)
                 # * Classify Pose
                 pred = self.model.predict(pose)
-                pred = self.le.inverse_transform(pred)
-                detectedPoses.append(pred)
-
                 # * Draw BoundingBox
-                if pred == "Y":
-                    self.datum.cvOutputData = DrawBoundingRectangle(
-                        self.datum.cvOutputData, GetBoundingBoxCoords(original_pose))
+                if pred:
+                    OutputImage = DrawBoundingRectangle(
+                        OutputImage, GetBoundingBoxCoords(original_pose)
+                    )
                     cheating = True
 
-        self.datum.cvOutputData = cv2.putText(
-            self.datum.cvOutputData,
-            ' '.join(map(str, detectedPoses)),
-            (10, 50),
-            cv2.FONT_HERSHEY_SIMPLEX,
-            1,
-            (0, 255, 0),
-            2,
-            cv2.LINE_AA,
-        )
-        return self.datum.cvOutputData, cheating
+        return OutputImage, cheating
