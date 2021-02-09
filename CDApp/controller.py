@@ -11,3 +11,4 @@ class Controller:
     detectCheat = False
     test = deque()
     title = "default-title"
+    producer = None

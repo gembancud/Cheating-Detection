@@ -232,8 +232,8 @@ class MyWebGear:
             debug=(True if self.__logging else False),
             routes=self.routes,
             exception_handlers=self.__exception_handlers,
-            on_startup=[self.__database.connect],
-            on_shutdown=[self.shutdown, self.__database.disconnect],
+            on_startup=[],
+            on_shutdown=[self.shutdown,],
         )
 
     async def __producer(self):

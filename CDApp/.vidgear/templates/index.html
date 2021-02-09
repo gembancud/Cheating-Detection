@@ -39,6 +39,12 @@ limitations under the License.
             <div class="collapse navbar-collapse justify-content-md-center cc_cursor" id="navbarsExample08">
                 <ul class="navbar-nav">
                     <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('startAll') }}">Start All</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('stopAll') }}">Stop All</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('startGeneratePose') }}">Start GP</a>
                     </li>
                     <li class="nav-item">
@@ -62,7 +68,7 @@ limitations under the License.
     <ul id='messages' class="list-group list-group-flush bg-dark">
     </ul>
     </p>
-    <a href="#" id="donwload-link" onClick="myFunction()">download html content</a>
+    <!-- <a href="#" id="donwload-link" onClick="myFunction()">download html content</a> -->
 
     <script>
         var ws = new WebSocket("ws://localhost:8001/ws");
