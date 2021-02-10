@@ -3,6 +3,7 @@ from vidgear.gears import NetGear, VideoGear
 # from vidgear.gears import helper
 import cv2
 import argparse
+import time
 
 
 def gstreamer_pipeline(
@@ -84,12 +85,17 @@ def main():
     # loop over
     if args.source:
         frame_counter = 0
+        fps = stream.get(cv2.CAP_PROP_FPS)
+        print(f"Fps is {fps}")
         while True:
-        # receive frames from network
+            # receive frames from network
             (grabbed, frame) = stream.read()
-            # check for received frame if Nonetype
+            # check for received fram e if Nonetype
             if frame is None:
                 break
+
+            time.sleep(1/(1.82*fps))
+
             frame_counter += 1
             if frame_counter == stream.get(cv2.CAP_PROP_FRAME_COUNT):
                 frame_counter=0

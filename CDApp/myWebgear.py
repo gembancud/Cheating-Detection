@@ -36,9 +36,9 @@ from vidgear.gears import VideoGear
 
 # define logger
 logger = log.getLogger("WebGear")
-logger.propagate = False
-logger.addHandler(logger_handler())
-logger.setLevel(log.DEBUG)
+# logger.propagate = False
+# logger.addHandler(logger_handler())
+# logger.setLevel(log.DEBUG)
 
 
 class MyWebGear:
@@ -139,6 +139,7 @@ class MyWebGear:
                         "Skipped invalid `overwrite_default_files` value!")
                 del options["overwrite_default_files"]  # clean
 
+        self.stream = None
         # # define stream with necessary params
         # self.stream = VideoGear(
         #     enablePiCamera=enablePiCamera,

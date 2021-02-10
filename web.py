@@ -32,8 +32,7 @@ options = {"frame_size_reduction": 50, "frame_jpeg_quality": 80,
 
 # initialize WebGear app with same source
 # also enable `logging` for debugging
-web = MyWebGear(source='./sample.mp4', logging=True,
-                database=None, **options)
+web = MyWebGear(logging=True, **options)
 
 FRAME_SKIP_CONSTANT = 3  # Higher Number More Skips
 
@@ -45,7 +44,7 @@ async def my_frame_producer():
         frame = Controller.server.recv()
         if frame is None:
             break
-        frame = await reducer(frame[1], percentage=50)
+        frame = await reducer(frame[1], percentage=25)
 
         # Do CheatDetection Here
         if Controller.generatePose and not Controller.detectCheat:
