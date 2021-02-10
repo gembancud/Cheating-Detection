@@ -94,7 +94,7 @@ def main():
             if frame is None:
                 break
 
-            time.sleep(1/(1.82*fps))
+            # time.sleep(1/(1.82*fps))
 
             frame_counter += 1
             if frame_counter == stream.get(cv2.CAP_PROP_FRAME_COUNT):

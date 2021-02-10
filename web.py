@@ -13,6 +13,7 @@ from starlette.config import Config
 import sqlalchemy
 import databases
 import requests
+import aiohttp
 import argparse
 import numpy as np
 
@@ -35,10 +36,15 @@ options = {"frame_size_reduction": 50, "frame_jpeg_quality": 80,
 web = MyWebGear(logging=True, **options)
 
 FRAME_SKIP_CONSTANT = 3  # Higher Number More Skips
+URL = "http://localhost:8000/api/core/snapshot/"
+
+session = aiohttp.ClientSession()
 
 
 async def my_frame_producer():
     frame_counter = 0
+
+    session = aiohttp.ClientSession()
 
     while True:
         frame = Controller.server.recv()
@@ -47,6 +53,7 @@ async def my_frame_producer():
         frame = await reducer(frame[1], percentage=25)
 
         # Do CheatDetection Here
+        cheating = False
         if Controller.generatePose and not Controller.detectCheat:
             Skip, frame_counter = frame_skip(
                 frame_counter, FRAME_SKIP_CONSTANT)
@@ -60,8 +67,6 @@ async def my_frame_producer():
                 continue
             frame = cd.GeneratePose(frame)
             frame, cheating = cd.DetectCheat(ShowPose=False)
-            if cheating:
-                send_image(frame)
         elif Controller.generatePose and Controller.detectCheat:
             Skip, frame_counter = frame_skip(
                 frame_counter, FRAME_SKIP_CONSTANT+1)
@@ -69,15 +74,25 @@ async def my_frame_producer():
                 continue
             frame = cd.GeneratePose(frame)
             frame, cheating = cd.DetectCheat(ShowPose=True)
-            if cheating:
-                send_image(frame)
 
         # Do Live Updates
-        # Controller.test.append("Update")
+        if cheating:
+            imencoded = cv2.imencode(".jpg", frame)[1]
+            form = aiohttp.FormData()
+            form.add_field('title', Controller.title)
+            form.add_field('image',
+                      imencoded.tostring(),
+                      filename=f'{Controller.title}.jpg',
+                      content_type='image/jpeg')
+            async with session.post(URL, data=form) as response:
+                print(await response.read())
+
         frame = cv2.resize(frame, (640, 480))
         encodedImage = cv2.imencode('.jpg', frame)[1].tobytes()
         yield (b'--frame\r\nContent-Type:image/jpeg\r\n\r\n'+encodedImage+b'\r\n')
         await asyncio.sleep(0.01)
+
+    await session.close()
 
 
 def frame_skip(frame_counter, constant):
@@ -93,11 +108,11 @@ def send_image(frame, url="http://localhost:8000/api/core/snapshot/"):
     file = {'image': ('image.jpg', imencoded.tostring(),
                       'image/jpeg', {'Expires': '0'})}
     data = {'title': Controller.title, }
-    # try:
-    #     response = requests.post(url, files=file, data=data, timeout=5)
-    #     return response
-    # except:
-    #     pass
+    try:
+        response = requests.post(url, files=file, data=data, timeout=5)
+        return response
+    except:
+        pass
 
 # now create your own streaming response server
 
@@ -149,6 +164,8 @@ if __name__ == '__main__':
 
     # run this app on Uvicorn server at address http://localhost:8001/
     uvicorn.run(app, host='0.0.0.0', port=8001)
+
+    session.close()
 
     # close app safely
     web.shutdown()

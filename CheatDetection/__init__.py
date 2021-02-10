@@ -57,7 +57,7 @@ class CheatDetection:
             model_folder = dir_path + "/models/"
         params = dict()
         params["model_folder"] = model_folder
-        # params["net_resolution"] = "-1x320"
+        params["net_resolution"] = "-1x320"
         params["process_real_time"] = True
 
         # Starting OpenPose
