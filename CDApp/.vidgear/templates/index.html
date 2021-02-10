@@ -24,11 +24,6 @@ limitations under the License.
     <h1 class="cover-heading">Video Feed</h1>
     <!-- <p class="lead"><img src="/video" class="img-fluid" alt="Feed"></p> -->
     <p class="lead"><img src="/my_frames" class="img-fluid" alt="Feed"></p>
-    <!-- <a href="{{ url_for('startGeneratePose') }}">Start GP</a>
-	<a href="{{ url_for('stopGeneratePose') }}">Stop GP</a>
-	<a href="{{ url_for('startCheatDetection') }}">Start CD</a>
-	<a href="{{ url_for('stopCheatDetection') }}">Stop CD</a> -->
-
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample08"
@@ -56,11 +51,15 @@ limitations under the License.
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('stopCheatDetection') }}">Stop CD</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="http://localhost:8000/admin/core/snapshot/">Go to DB</a>
+                    </li>
                 </ul>
             </div>
         </div>
     </nav>
     <p class="lead">
+        
     <form action="" onsubmit="sendMessage(event)">
         <input type="text" id="messageText" autocomplete="off" />
         <button>Send</button>
