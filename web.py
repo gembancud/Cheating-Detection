@@ -69,7 +69,7 @@ async def my_frame_producer():
             frame, cheating = cd.DetectCheat(ShowPose=False)
         elif Controller.generatePose and Controller.detectCheat:
             Skip, frame_counter = frame_skip(
-                frame_counter, FRAME_SKIP_CONSTANT+1)
+                frame_counter, FRAME_SKIP_CONSTANT+2)
             if Skip:
                 continue
             frame = cd.GeneratePose(frame)

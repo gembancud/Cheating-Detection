@@ -88,21 +88,32 @@ class CheatDetection:
             OutputImage = self.datum.cvInputData
 
         if poseCollection.ndim != 0:
-            for pose in poseCollection:
-                original_pose = copy.deepcopy(pose)
-                # * Normalize Pose Collection
-                pose = NormalizePose(pose)
-                #  * Reshaping of Pose Collection
-                pose = ReshapePose(pose)
-                # * Creating a Pose Collection DataFrame
-                pose = ConvertToDataFrame(pose)
-                # * Classify Pose
-                pred = self.model.predict(pose)
-                # * Draw BoundingBox
+            original_posecollection = copy.deepcopy(poseCollection)
+            poseCollection = NormalizePoseCollection(poseCollection)
+            poseCollection = ReshapePoseCollection(poseCollection)
+            poseCollection = ConvertToDataFrame(poseCollection)
+            preds = self.model.predict(poseCollection)
+            for idx, pred in enumerate(preds):
                 if pred:
-                    OutputImage = DrawBoundingRectangle(
-                        OutputImage, GetBoundingBoxCoords(original_pose)
-                    )
                     cheating = True
+                    OutputImage = DrawBoundingRectangle(
+                        OutputImage, GetBoundingBoxCoords(original_posecollection[idx])
+                    )
+
+            # for pose in poseCollection:
+            #     # * Normalize Pose Collection
+            #     pose = NormalizePose(pose)
+            #     #  * Reshaping of Pose Collection
+            #     pose = ReshapePose(pose)
+            #     # * Creating a Pose Collection DataFrame
+            #     pose = ConvertToDataFrame(pose)
+            #     # * Classify Pose
+            #     pred = self.model.predict(pose)
+                # * Draw BoundingBox
+                # if pred:
+                #     OutputImage = DrawBoundingRectangle(
+                #         OutputImage, GetBoundingBoxCoords(original_pose)
+                #     )
+                #     cheating = True
 
         return OutputImage, cheating
