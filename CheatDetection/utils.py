@@ -158,13 +158,26 @@ def ConvertToDataFrame(poseCollection, label=None):
 
 
 # GETS THE COLUMN NAMES FOR THE DATAFRAME OF THE POSE COLLECTION INTO A SINGLE LIST
-def GetColumnNames():
+def GetColumnNames(dim=None):
     # columnNames = []
     # for i in range(25):
     #     columnNames.append("kp" + str(i) + "_X")
     #     columnNames.append("kp" + str(i) + "_Y")
     #     columnNames.append("kp" + str(i) + "_Z")
     # return columnNames
+    if dim == "x" or dim == "X":
+        return
+        ['kp0_X', 'kp1_X', 'kp2_X', 'kp3_X', 'kp4_X', 'kp5_X', 'kp6_X', 'kp7_X', 'kp8_X', 'kp9_X', 'kp10_X', 'kp11_X', 'kp12_X',
+            'kp13_X', 'kp14_X', 'kp15_X', 'kp16_X', 'kp17_X', 'kp18_X', 'kp19_X', 'kp20_X', 'kp21_X', 'kp22_X', 'kp23_X', 'kp24_X']
+
+    if dim == "y" or dim == "Y":
+        return ['kp0_Y', 'kp1_Y', 'kp2_Y', 'kp3_Y', 'kp4_Y', 'kp5_Y', 'kp6_Y', 'kp7_Y', 'kp8_Y', 'kp9_Y', 'kp10_Y', 'kp11_Y',
+                'kp12_Y', 'kp13_Y', 'kp14_Y', 'kp15_Y', 'kp16_Y', 'kp17_Y', 'kp18_Y', 'kp19_Y', 'kp20_Y', 'kp21_Y', 'kp22_Y', 'kp23_Y', 'kp24_Y']
+
+    if dim == "z" or dim == "Z":
+        return ['kp0_Z', 'kp1_Z', 'kp2_Z', 'kp3_Z', 'kp4_Z', 'kp5_Z', 'kp6_Z', 'kp7_Z', 'kp8_Z', 'kp9_Z', 'kp10_Z', 'kp11_Z', 'kp12_Z',
+                'kp13_Z', 'kp14_Z', 'kp15_Z', 'kp16_Z', 'kp17_Z', 'kp18_Z', 'kp19_Z', 'kp20_Z', 'kp21_Z', 'kp22_Z', 'kp23_Z', 'kp24_Z']
+
     return ['kp0_X', 'kp0_Y', 'kp0_Z', 'kp1_X', 'kp1_Y', 'kp1_Z',
             'kp2_X', 'kp2_Y', 'kp2_Z', 'kp3_X', 'kp3_Y', 'kp3_Z', 'kp4_X',
             'kp4_Y', 'kp4_Z', 'kp5_X', 'kp5_Y', 'kp5_Z', 'kp6_X', 'kp6_Y',
@@ -201,5 +214,56 @@ def DrawBoundingRectangle(image, point, color=(0, 0, 255), thickness=2):
     return cv2.rectangle(image, point[0], point[1], color, thickness)
 
 
-def TestAccess():
-    print("Test Success")
+X_COLUMNNAMES = ['kp0_X', 'kp1_X', 'kp2_X', 'kp3_X', 'kp4_X', 'kp5_X', 'kp6_X', 'kp7_X', 'kp8_X', 'kp9_X', 'kp10_X', 'kp11_X', 'kp12_X',
+                 'kp13_X', 'kp14_X', 'kp15_X', 'kp16_X', 'kp17_X', 'kp18_X', 'kp19_X', 'kp20_X', 'kp21_X', 'kp22_X', 'kp23_X', 'kp24_X']
+Y_COLUMNNAMES = ['kp0_Y', 'kp1_Y', 'kp2_Y', 'kp3_Y', 'kp4_Y', 'kp5_Y', 'kp6_Y', 'kp7_Y', 'kp8_Y', 'kp9_Y', 'kp10_Y', 'kp11_Y',
+                 'kp12_Y', 'kp13_Y', 'kp14_Y', 'kp15_Y', 'kp16_Y', 'kp17_Y', 'kp18_Y', 'kp19_Y', 'kp20_Y', 'kp21_Y', 'kp22_Y', 'kp23_Y', 'kp24_Y']
+Z_COLUMNNAMES = ['kp0_Z', 'kp1_Z', 'kp2_Z', 'kp3_Z', 'kp4_Z', 'kp5_Z', 'kp6_Z', 'kp7_Z', 'kp8_Z', 'kp9_Z', 'kp10_Z', 'kp11_Z', 'kp12_Z',
+                 'kp13_Z', 'kp14_Z', 'kp15_Z', 'kp16_Z', 'kp17_Z', 'kp18_Z', 'kp19_Z', 'kp20_Z', 'kp21_Z', 'kp22_Z', 'kp23_Z', 'kp24_Z']
+COLUMNNAMES = ['kp0_X', 'kp0_Y', 'kp0_Z', 'kp1_X', 'kp1_Y', 'kp1_Z',
+               'kp2_X', 'kp2_Y', 'kp2_Z', 'kp3_X', 'kp3_Y', 'kp3_Z', 'kp4_X',
+               'kp4_Y', 'kp4_Z', 'kp5_X', 'kp5_Y', 'kp5_Z', 'kp6_X', 'kp6_Y',
+               'kp6_Z', 'kp7_X', 'kp7_Y', 'kp7_Z', 'kp8_X', 'kp8_Y', 'kp8_Z',
+               'kp9_X', 'kp9_Y', 'kp9_Z', 'kp10_X', 'kp10_Y', 'kp10_Z',
+               'kp11_X', 'kp11_Y', 'kp11_Z', 'kp12_X', 'kp12_Y', 'kp12_Z',
+               'kp13_X', 'kp13_Y', 'kp13_Z', 'kp14_X', 'kp14_Y', 'kp14_Z',
+               'kp15_X', 'kp15_Y', 'kp15_Z', 'kp16_X', 'kp16_Y', 'kp16_Z',
+               'kp17_X', 'kp17_Y', 'kp17_Z', 'kp18_X', 'kp18_Y', 'kp18_Z',
+               'kp19_X', 'kp19_Y', 'kp19_Z', 'kp20_X', 'kp20_Y', 'kp20_Z',
+               'kp21_X', 'kp21_Y', 'kp21_Z', 'kp22_X', 'kp22_Y', 'kp22_Z',
+               'kp23_X', 'kp23_Y', 'kp23_Z', 'kp24_X', 'kp24_Y', 'kp24_Z']
+
+TAKE_FIRST = lambda s1, s2: s1
+def NormalizeDataFrame(dataframe, flipY=True):
+    # print(dataframe.head())
+    # print(X_COLUMNNAMES)
+    dfX = dataframe[X_COLUMNNAMES]
+    dfY = dataframe[Y_COLUMNNAMES]
+
+    print(dfX.head())
+    print(dfY.head())
+
+    maxX = dfX.loc[:, ~(dfX == 0.0)].max(axis=1)
+    minX = dfX.loc[:, ~(dfX == 0.0)].min(axis=1)
+    maxY = dfY.loc[:, ~(dfY == 0.0)].max(axis=1)
+    minY = dfY.loc[:, ~(dfY == 0.0)].min(axis=1)
+
+    frameDiffX = maxX - minX
+    frameDiffY = maxY - minY
+
+    dfX = dfX.subtract(minX)
+    print(dfX.head())
+    dfX = dfX.div(frameDiffX)
+    print(dfX.head())
+
+    dfY = dfY.subtract(minY)
+    dfY = dfY.div(frameDiffY)
+
+
+    print(dfX.head())
+    print(dfY.head())
+    rdf = pd.concat([dfX,dfY],axis=1)
+    print(rdf.columns)
+    print(f"rdf {rdf.shape} df {dataframe.shape}")
+
+    return dataframe.combine(rdf,TAKE_FIRST)
