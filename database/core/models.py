@@ -16,7 +16,7 @@ class Snapshot(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
 
     def image_tag(self):
-        return mark_safe(f'<img src="{self.image.url}" width="150" height="150" />')
+        return mark_safe(f'<a href="{self.image.url}"><img src="{self.image.url}" width="150" height="150" /></a>')
 
     def save(self, *args, **kwargs):
         # self.image = make_thumbnail(self.image)
