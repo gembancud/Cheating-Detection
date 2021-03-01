@@ -19,10 +19,10 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-admin.site.site_url = "http://localhost:8001/"
+admin.site.site_url = "http://192.168.31.148:8001/"
 admin.site.site_header = "Cheating Detection Database System"
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('', admin.site.urls),
     path('api/', include("rest.urls")),
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) # just after your urlspatterns

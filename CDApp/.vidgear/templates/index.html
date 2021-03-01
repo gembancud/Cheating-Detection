@@ -52,7 +52,7 @@ limitations under the License.
                         <a class="nav-link" href="{{ url_for('stopCheatDetection') }}">Stop CD</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="http://localhost:8000/admin/core/snapshot/">Go to DB</a>
+                        <a class="nav-link" href="http://192.168.31.148:8000/admin/core/snapshot/">Go to DB</a>
                     </li>
                 </ul>
             </div>
@@ -70,7 +70,7 @@ limitations under the License.
     <!-- <a href="#" id="donwload-link" onClick="myFunction()">download html content</a> -->
 
     <script>
-        var ws = new WebSocket("ws://localhost:8001/ws");
+        var ws = new WebSocket("ws://192.168.31.148:8001/ws");
         ws.onmessage = function (event) {
             var messages = document.getElementById('messages')
             var message = document.createElement('li')
