@@ -26,7 +26,7 @@ path = os.path.abspath(__file__)
 dir_path = os.path.dirname(path)
 
 
-options = {"frame_size_reduction": 50, "frame_jpeg_quality": 80,
+options = {"frame_size_reduction": 90, "frame_jpeg_quality": 80,
            "frame_jpeg_optimize": True, "frame_jpeg_progressive": False,
            "custom_data_location": dir_path+"/CDApp/",
            }
@@ -36,9 +36,7 @@ options = {"frame_size_reduction": 50, "frame_jpeg_quality": 80,
 web = MyWebGear(logging=True, **options)
 
 FRAME_SKIP_CONSTANT = 3  # Higher Number More Skips
-URL = "http://localhost:8000/api/core/snapshot/"
-
-session = aiohttp.ClientSession()
+URL = "http://192.168.31.148:8000/api/core/snapshot/"
 
 
 async def my_frame_producer():
@@ -51,6 +49,7 @@ async def my_frame_producer():
         if frame is None:
             break
         frame = await reducer(frame[1], percentage=25)
+        # frame = frame[1]
 
         # Do CheatDetection Here
         cheating = False
@@ -85,9 +84,9 @@ async def my_frame_producer():
                       filename=f'{Controller.title}.jpg',
                       content_type='image/jpeg')
             async with session.post(URL, data=form) as response:
-                print(await response.read())
+                print(response.read())
 
-        frame = cv2.resize(frame, (640, 480))
+        # frame = cv2.resize(frame, (640, 480))
         encodedImage = cv2.imencode('.jpg', frame)[1].tobytes()
         yield (b'--frame\r\nContent-Type:image/jpeg\r\n\r\n'+encodedImage+b'\r\n')
         await asyncio.sleep(0.01)
@@ -103,7 +102,7 @@ def frame_skip(frame_counter, constant):
         return False, 0
 
 
-def send_image(frame, url="http://localhost:8000/api/core/snapshot/"):
+def send_image(frame, url="http://192.168.31.148:8000/api/core/snapshot/"):
     imencoded = cv2.imencode(".jpg", frame)[1]
     file = {'image': ('image.jpg', imencoded.tostring(),
                       'image/jpeg', {'Expires': '0'})}
@@ -148,7 +147,7 @@ if __name__ == '__main__':
             cv2.IMREAD_COLOR,
             [
                 cv2.IMWRITE_JPEG_QUALITY,
-                60,
+                70,
                 cv2.IMWRITE_JPEG_PROGRESSIVE,
                 False,
                 cv2.IMWRITE_JPEG_OPTIMIZE,
@@ -165,7 +164,7 @@ if __name__ == '__main__':
     # run this app on Uvicorn server at address http://localhost:8001/
     uvicorn.run(app, host='0.0.0.0', port=8001)
 
-    session.close()
+    # session.close()
 
     # close app safely
     web.shutdown()

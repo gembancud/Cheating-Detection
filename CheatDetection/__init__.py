@@ -74,19 +74,19 @@ class CheatDetection:
 
     def GeneratePose(self, img):
         # datum = op.Datum()
+        self.image = img
         self.datum.cvInputData = img
         self.opWrapper.emplaceAndPop([self.datum])
         return self.datum.cvOutputData
 
-    def DetectCheat(self,ShowPose=True, img=None):
+    def DetectCheat(self, ShowPose=True, img=None):
         poseCollection = self.datum.poseKeypoints
         detectedPoses = []
         cheating = False
         if ShowPose == True:
             OutputImage = self.datum.cvOutputData
         else:
-            OutputImage = self.datum.cvInputData
-
+            OutputImage = self.image
         if poseCollection.ndim != 0:
             original_posecollection = copy.deepcopy(poseCollection)
             poseCollection = NormalizePoseCollection(poseCollection)
@@ -97,7 +97,8 @@ class CheatDetection:
                 if pred:
                     cheating = True
                     OutputImage = DrawBoundingRectangle(
-                        OutputImage, GetBoundingBoxCoords(original_posecollection[idx])
+                        OutputImage, GetBoundingBoxCoords(
+                            original_posecollection[idx])
                     )
 
             # for pose in poseCollection:

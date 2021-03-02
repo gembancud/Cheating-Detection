@@ -23,6 +23,6 @@ admin.site.site_url = "http://192.168.31.148:8001/"
 admin.site.site_header = "Cheating Detection Database System"
 
 urlpatterns = [
-    path('', admin.site.urls),
+    path('admin/', admin.site.urls),
     path('api/', include("rest.urls")),
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) # just after your urlspatterns
