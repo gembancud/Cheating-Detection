@@ -7,10 +7,10 @@ import time
 
 
 def gstreamer_pipeline(
-    capture_width=1280,
-    capture_height=720,
-    display_width=1280,
-    display_height=720,
+    capture_width=640,
+    capture_height=480,
+    display_width=640,
+    display_height=480,
     framerate=60,
     flip_method=0,
 ):
@@ -42,9 +42,9 @@ options = {
         cv2.IMREAD_COLOR,
         [
             cv2.IMWRITE_JPEG_QUALITY,
-            60,
+            70,
             cv2.IMWRITE_JPEG_PROGRESSIVE,
-            False,
+            True,
             cv2.IMWRITE_JPEG_OPTIMIZE,
             True,
         ],

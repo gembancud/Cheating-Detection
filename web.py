@@ -48,7 +48,7 @@ async def my_frame_producer():
         frame = Controller.server.recv()
         if frame is None:
             break
-        frame = await reducer(frame[1], percentage=25)
+        frame = await reducer(frame[1], percentage=40)
         # frame = frame[1]
 
         # Do CheatDetection Here
@@ -86,7 +86,7 @@ async def my_frame_producer():
             async with session.post(URL, data=form) as response:
                 print(response.read())
 
-        # frame = cv2.resize(frame, (640, 480))
+        frame = cv2.resize(frame, (640, 480))
         encodedImage = cv2.imencode('.jpg', frame)[1].tobytes()
         yield (b'--frame\r\nContent-Type:image/jpeg\r\n\r\n'+encodedImage+b'\r\n')
         await asyncio.sleep(0.01)
@@ -149,7 +149,7 @@ if __name__ == '__main__':
                 cv2.IMWRITE_JPEG_QUALITY,
                 70,
                 cv2.IMWRITE_JPEG_PROGRESSIVE,
-                False,
+                True,
                 cv2.IMWRITE_JPEG_OPTIMIZE,
                 True,
             ],
