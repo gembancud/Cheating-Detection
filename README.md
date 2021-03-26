@@ -32,7 +32,12 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+Abstract - Academic cheating is the use of prohibited methods to gain an unlawful advantage during academic tests and examinations. This study proposes the use of cutting-edge
+machine learning, particularly deep learning, to utilize pose estimation on examinees to determine if they are cheating. A proctor’s monitoring system was developed alongside the assistive monitoring device using the Nvidia Jetson Nano. A web application was developed to allow the proctor to observe the video feed captured by the device, control the pose estimation and cheating detection features, and review previously stored evidence. The developed system provides real-time capabilities  close to 10 frames per second under the full computational load. Benchmarked on a validated dataset, the system was evaluated with an accuracy of 90%, an f1-score of 89.65%, and an area nder the receiver operating characteristic curve (AUROC) of 0.32%. A demonstrated survey to proctors yields complete greement on the system’s overall effectiveness.
+
+See the complete paper [here!](https://drive.google.com/file/d/1Tb0Qf9gBLiqN-Tclv99ep66OETWkNLQi/view?usp=sharing)
+
+This study has won 1st Runner up in the Ateneo de Davao University Engineering Thesis Awards. See [here!](https://twitter.com/ADDU_SEA/status/1372864898506485766/photo/2)
 
 # This project is no longer under active development but welcomes changes/improvements
 
