@@ -3,13 +3,14 @@ from vidgear.gears import NetGear, VideoGear
 # from vidgear.gears import helper
 import cv2
 import argparse
+import time
 
 
 def gstreamer_pipeline(
-    capture_width=1280,
-    capture_height=720,
-    display_width=1280,
-    display_height=720,
+    capture_width=640,
+    capture_height=480,
+    display_width=640,
+    display_height=480,
     framerate=60,
     flip_method=0,
 ):
@@ -41,9 +42,9 @@ options = {
         cv2.IMREAD_COLOR,
         [
             cv2.IMWRITE_JPEG_QUALITY,
-            60,
+            70,
             cv2.IMWRITE_JPEG_PROGRESSIVE,
-            False,
+            True,
             cv2.IMWRITE_JPEG_OPTIMIZE,
             True,
         ],
@@ -84,12 +85,17 @@ def main():
     # loop over
     if args.source:
         frame_counter = 0
+        fps = stream.get(cv2.CAP_PROP_FPS)
+        print(f"Fps is {fps}")
         while True:
-        # receive frames from network
+            # receive frames from network
             (grabbed, frame) = stream.read()
-            # check for received frame if Nonetype
+            # check for received fram e if Nonetype
             if frame is None:
                 break
+
+            # time.sleep(1/(1.82*fps))
+
             frame_counter += 1
             if frame_counter == stream.get(cv2.CAP_PROP_FRAME_COUNT):
                 frame_counter=0

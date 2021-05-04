@@ -13,6 +13,7 @@ from starlette.config import Config
 import sqlalchemy
 import databases
 import requests
+import aiohttp
 import argparse
 import numpy as np
 
@@ -25,29 +26,33 @@ path = os.path.abspath(__file__)
 dir_path = os.path.dirname(path)
 
 
-options = {"frame_size_reduction": 50, "frame_jpeg_quality": 80,
+options = {"frame_size_reduction": 90, "frame_jpeg_quality": 80,
            "frame_jpeg_optimize": True, "frame_jpeg_progressive": False,
            "custom_data_location": dir_path+"/CDApp/",
            }
 
 # initialize WebGear app with same source
 # also enable `logging` for debugging
-web = MyWebGear(source='./sample.mp4', logging=True,
-                database=None, **options)
+web = MyWebGear(logging=True, **options)
 
 FRAME_SKIP_CONSTANT = 3  # Higher Number More Skips
+URL = "http://192.168.31.148:8000/api/core/snapshot/"
 
 
 async def my_frame_producer():
     frame_counter = 0
 
+    session = aiohttp.ClientSession()
+
     while True:
         frame = Controller.server.recv()
         if frame is None:
             break
-        frame = await reducer(frame[1], percentage=50)
+        frame = await reducer(frame[1], percentage=40)
+        # frame = frame[1]
 
         # Do CheatDetection Here
+        cheating = False
         if Controller.generatePose and not Controller.detectCheat:
             Skip, frame_counter = frame_skip(
                 frame_counter, FRAME_SKIP_CONSTANT)
@@ -61,24 +66,32 @@ async def my_frame_producer():
                 continue
             frame = cd.GeneratePose(frame)
             frame, cheating = cd.DetectCheat(ShowPose=False)
-            if cheating:
-                send_image(frame)
         elif Controller.generatePose and Controller.detectCheat:
             Skip, frame_counter = frame_skip(
-                frame_counter, FRAME_SKIP_CONSTANT+1)
+                frame_counter, FRAME_SKIP_CONSTANT+2)
             if Skip:
                 continue
             frame = cd.GeneratePose(frame)
             frame, cheating = cd.DetectCheat(ShowPose=True)
-            if cheating:
-                send_image(frame)
 
         # Do Live Updates
-        # Controller.test.append("Update")
+        if cheating:
+            imencoded = cv2.imencode(".jpg", frame)[1]
+            form = aiohttp.FormData()
+            form.add_field('title', Controller.title)
+            form.add_field('image',
+                      imencoded.tostring(),
+                      filename=f'{Controller.title}.jpg',
+                      content_type='image/jpeg')
+            async with session.post(URL, data=form) as response:
+                print(response.read())
+
         frame = cv2.resize(frame, (640, 480))
         encodedImage = cv2.imencode('.jpg', frame)[1].tobytes()
         yield (b'--frame\r\nContent-Type:image/jpeg\r\n\r\n'+encodedImage+b'\r\n')
         await asyncio.sleep(0.01)
+
+    await session.close()
 
 
 def frame_skip(frame_counter, constant):
@@ -89,16 +102,16 @@ def frame_skip(frame_counter, constant):
         return False, 0
 
 
-def send_image(frame, url="http://localhost:8000/api/core/snapshot/"):
+def send_image(frame, url="http://192.168.31.148:8000/api/core/snapshot/"):
     imencoded = cv2.imencode(".jpg", frame)[1]
     file = {'image': ('image.jpg', imencoded.tostring(),
                       'image/jpeg', {'Expires': '0'})}
     data = {'title': Controller.title, }
-    # try:
-    #     response = requests.post(url, files=file, data=data, timeout=5)
-    #     return response
-    # except:
-    #     pass
+    try:
+        response = requests.post(url, files=file, data=data, timeout=5)
+        return response
+    except:
+        pass
 
 # now create your own streaming response server
 
@@ -134,9 +147,9 @@ if __name__ == '__main__':
             cv2.IMREAD_COLOR,
             [
                 cv2.IMWRITE_JPEG_QUALITY,
-                60,
+                70,
                 cv2.IMWRITE_JPEG_PROGRESSIVE,
-                False,
+                True,
                 cv2.IMWRITE_JPEG_OPTIMIZE,
                 True,
             ],
@@ -150,6 +163,8 @@ if __name__ == '__main__':
 
     # run this app on Uvicorn server at address http://localhost:8001/
     uvicorn.run(app, host='0.0.0.0', port=8001)
+
+    # session.close()
 
     # close app safely
     web.shutdown()

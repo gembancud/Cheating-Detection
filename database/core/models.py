@@ -12,9 +12,11 @@ from django.core.files.storage import default_storage
 class Snapshot(models.Model):
     title = models.CharField(max_length=255, blank=True, null=True)
     image = models.ImageField()
+    verified = models.BooleanField(default=False,null=True)
+    date_created = models.DateTimeField(auto_now_add=True)
 
     def image_tag(self):
-        return mark_safe(f'<img src="{self.image.url}" width="150" height="150" />')
+        return mark_safe(f'<a href="{self.image.url}"><img src="{self.image.url}" width="150" height="150" /></a>')
 
     def save(self, *args, **kwargs):
         # self.image = make_thumbnail(self.image)

@@ -57,7 +57,7 @@ class CheatDetection:
             model_folder = dir_path + "/models/"
         params = dict()
         params["model_folder"] = model_folder
-        params["net_resolution"] = "-1x320"
+        params["net_resolution"] = "-1x240"
         params["process_real_time"] = True
 
         # Starting OpenPose
@@ -74,35 +74,47 @@ class CheatDetection:
 
     def GeneratePose(self, img):
         # datum = op.Datum()
+        self.image = img
         self.datum.cvInputData = img
         self.opWrapper.emplaceAndPop([self.datum])
         return self.datum.cvOutputData
 
-    def DetectCheat(self,ShowPose=True, img=None):
+    def DetectCheat(self, ShowPose=True, img=None):
         poseCollection = self.datum.poseKeypoints
         detectedPoses = []
         cheating = False
         if ShowPose == True:
             OutputImage = self.datum.cvOutputData
         else:
-            OutputImage = self.datum.cvInputData
-
+            OutputImage = self.image
         if poseCollection.ndim != 0:
-            for pose in poseCollection:
-                original_pose = copy.deepcopy(pose)
-                # * Normalize Pose Collection
-                pose = NormalizePose(pose)
-                #  * Reshaping of Pose Collection
-                pose = ReshapePose(pose)
-                # * Creating a Pose Collection DataFrame
-                pose = ConvertToDataFrame(pose)
-                # * Classify Pose
-                pred = self.model.predict(pose)
-                # * Draw BoundingBox
+            original_posecollection = copy.deepcopy(poseCollection)
+            poseCollection = NormalizePoseCollection(poseCollection)
+            poseCollection = ReshapePoseCollection(poseCollection)
+            poseCollection = ConvertToDataFrame(poseCollection)
+            preds = self.model.predict(poseCollection)
+            for idx, pred in enumerate(preds):
                 if pred:
-                    OutputImage = DrawBoundingRectangle(
-                        OutputImage, GetBoundingBoxCoords(original_pose)
-                    )
                     cheating = True
+                    OutputImage = DrawBoundingRectangle(
+                        OutputImage, GetBoundingBoxCoords(
+                            original_posecollection[idx])
+                    )
+
+            # for pose in poseCollection:
+            #     # * Normalize Pose Collection
+            #     pose = NormalizePose(pose)
+            #     #  * Reshaping of Pose Collection
+            #     pose = ReshapePose(pose)
+            #     # * Creating a Pose Collection DataFrame
+            #     pose = ConvertToDataFrame(pose)
+            #     # * Classify Pose
+            #     pred = self.model.predict(pose)
+                # * Draw BoundingBox
+                # if pred:
+                #     OutputImage = DrawBoundingRectangle(
+                #         OutputImage, GetBoundingBoxCoords(original_pose)
+                #     )
+                #     cheating = True
 
         return OutputImage, cheating
